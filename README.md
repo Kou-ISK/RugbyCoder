@@ -1,1 +1,3 @@
 # RugbyCoder
+
+## Write Code Everyday
