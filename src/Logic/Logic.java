@@ -7,4 +7,8 @@ public class Logic {
 
     public void timelineStart(){
     }
+
+    public void exportTime(){
+
+    }
 }

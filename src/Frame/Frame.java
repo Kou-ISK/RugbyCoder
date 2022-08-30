@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalTime;
 
-
 public class Frame{
     public static void main(String[] args) {
 //        ビデオ再生用ウィンドウ
