@@ -1,5 +1,8 @@
 package Frame;
 
+import javafx.embed.swing.JFXPanel;
+import javafx.stage.Stage;
+
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalTime;
@@ -11,6 +14,9 @@ public class Frame{
         videoFrame.setTitle("Rugby Coder");
         videoFrame.setVisible(true);
         videoFrame.setSize(700,450);
+        JFXPanel jfxVideoPanel = new JFXPanel();
+        jfxVideoPanel.setVisible(true);
+        videoFrame.add(jfxVideoPanel);
 
 //        タイムライン用ウィンドウ
         JFrame tlFrame = new JFrame("Timeline");
@@ -18,6 +24,8 @@ public class Frame{
         tlFrame.setVisible(true);
         tlFrame.setSize(1400, 400);
         tlFrame.setLocation(0,490);
+        MediaControllerClass mc = new MediaControllerClass();
+        mc.start(new Stage());
 
 //        コードウィンドウ
         JFrame codeWindow = new JFrame("Code Window");
@@ -56,6 +64,5 @@ public class Frame{
         cwContainer.add(lineOutButton);
 
         cwContainer.setVisible(true);
-
     }
 }
