@@ -18,7 +18,7 @@ public class Frame{
         codeWindow cWindow = new codeWindow("Code Window",800,500);
         //ムービー再生パネル
         //引数にはファイルのパスを指定してください。
-        MoviePanel mp = new MoviePanel("");
+        MoviePanel mp = new MoviePanel("/Users/isakakou/Downloads/mov_hts-samp003.mp4");
 
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
