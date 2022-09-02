@@ -15,15 +15,14 @@ public class Frame{
     public static void main(String[] args) throws Exception{
 //        ビデオ再生用ウィンドウ
         window videoWindow = new window("Rugby Coder", 700,450);
-        codeWindow cWindow = new codeWindow("Code Window",800,500);
         //ムービー再生パネル
         //引数にはファイルのパスを指定してください。
-        MoviePanel mp = new MoviePanel("/Users/isakakou/Downloads/mov_hts-samp003.mp4");
-
+        MoviePanel mp = new MoviePanel("/Users/isakakou/Desktop/MAH00204.MP4");
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
         MediaPlayer player = mp.getPlayer();
 
+        codeWindow cWindow = new codeWindow("Code Window",player,800,500);
         //読み込み待ち
         for(int i = 0;player.getStatus() != MediaPlayer.Status.READY;i++) {
             try {
@@ -52,9 +51,11 @@ public class Frame{
 
         videoWindow.setVisible(true);
         cWindow.setVisible(true);
-cWindow.setLocation(750,0);
+        cWindow.setLocation(750,0);
         //動画の再生
         player.play();
+        System.out.println("カレント" + player.getCurrentTime());
+        System.out.println(player.getStopTime());
     }
 }
 
@@ -66,19 +67,28 @@ class window extends JFrame {
     }
 
 class codeWindow extends JFrame{
-        codeWindow(String title, int x, int y) {
+        codeWindow(String title, MediaPlayer player, int x, int y) {
             setTitle(title);
             setSize(x,y);
             Container cwContainer = this.getContentPane();
-            button startButton = new button("Start",400,100);
+//            再生ボタン
+            button startButton = new button("Start",400,200);
+            startButton.addActionListener(a ->{
+                player.play();
+            });
             cwContainer.add(startButton);
-            button endButton = new button("End",400,100);
-            cwContainer.add(endButton);
-            button tackleButton = new button("Tackle",400,100);
+//            停止ボタン
+            button pauseButton = new button("Pause",400,200);
+            pauseButton.addActionListener(a ->
+                    player.pause());
+            cwContainer.add(pauseButton);
+            button tackleButton = new button("Tackle",400,200);
+            tackleButton.addActionListener(a->
+                    System.out.println(player.getCurrentTime() + " Tackle"));
             cwContainer.add(tackleButton);
-            button scrumButton = new button("Scrum",400,100);
+            button scrumButton = new button("Scrum",400,200);
             cwContainer.add(scrumButton);
-            button lineOutButton = new button("Lineout",400,100);
+            button lineOutButton = new button("Lineout",400,200);
             cwContainer.add(lineOutButton);
             setLayout(new FlowLayout());
         }
@@ -109,6 +119,15 @@ class MoviePanel extends JFXPanel {
         MediaView mediaView = new MediaView(player);
         root.getChildren().add(mediaView);
 
+        int rawTime = (int) media.getDuration().toSeconds();
+        int second = rawTime % 60;
+        int minute = ((rawTime % 3600)/60);
+        int hour = rawTime/3600;
+
+        //HH:mm:ss形式で時間を取得
+        String time = String.format("%02d:%02d:%02d",
+                hour, minute, second);
+        System.out.println(time);
         //JavaFXScene
         Scene scene = new Scene( root );
 
