@@ -1,3 +1,4 @@
-# RugbyCoder
+# Rugby Coder
 
-## Write Code Everyday
+## How To Use
+Input File Path to certain method

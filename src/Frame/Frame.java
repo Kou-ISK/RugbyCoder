@@ -3,27 +3,25 @@ package Frame;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-
+import javafx.scene.media.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
 public class Frame{
     public static void main(String[] args) throws Exception{
-//        ビデオ再生用ウィンドウ
+//      Creating Media Player Window
         window videoWindow = new window("Rugby Coder", 700,450);
-        //ムービー再生パネル
-        //引数にはファイルのパスを指定してください。
-        MoviePanel mp = new MoviePanel("/Users/isakakou/Desktop/MAH00204.MP4");
+        //Input Video File Path
+        MoviePanel mp = new MoviePanel("");
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
         MediaPlayer player = mp.getPlayer();
 
-        codeWindow cWindow = new codeWindow("Code Window",player,800,500);
-        //読み込み待ち
+        codeWindow cWindow = new codeWindow("Code Window",player,500,800);
+        //Loading
         for(int i = 0;player.getStatus() != MediaPlayer.Status.READY;i++) {
             try {
                 Thread.sleep(500);
@@ -33,15 +31,15 @@ public class Frame{
         }
 
         //読み込み完了後なら動画サイズを取得できる
-        int videoW = media.getWidth();
-        int videoH = media.getHeight();
+        int videoW = media.getWidth()/3*2;
+        int videoH = media.getHeight()/3*2;
 
         //MoviePanelのサイズを動画に合わせてJFrameに追加
         mp.setPreferredSize(new Dimension(videoW,videoH));
         videoWindow.add(mp);
 
         //JFrame側のパネルサイズを動画に合わせる
-        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW,videoH));
+        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW,videoH+100));
 
         //JFrameサイズをパネル全体が見えるサイズに自動調整
         videoWindow.pack();
@@ -49,12 +47,26 @@ public class Frame{
         //中心に表示
         videoWindow.setLocationRelativeTo(null);
 
+        //再生ボタン
+        button startButton = new button("Start",1000,400);
+        startButton.addActionListener(a ->{
+            player.play();
+        });
+        videoWindow.add(startButton);
+        button pauseButton = new button("Pause",1000,400);
+        pauseButton.addActionListener(a ->
+            player.pause());
+        videoWindow.add(pauseButton);
+
+
+        videoWindow.setLayout(new FlowLayout());
         videoWindow.setVisible(true);
         cWindow.setVisible(true);
-        cWindow.setLocation(750,0);
+        videoWindow.setLocation(0,0);
+        cWindow.setLocation(900,0);
         //動画の再生
         player.play();
-        System.out.println("カレント" + player.getCurrentTime());
+        System.out.println("Current: " + player.getCurrentTime());
         System.out.println(player.getStopTime());
     }
 }
@@ -71,24 +83,19 @@ class codeWindow extends JFrame{
             setTitle(title);
             setSize(x,y);
             Container cwContainer = this.getContentPane();
-//            再生ボタン
-            button startButton = new button("Start",400,200);
-            startButton.addActionListener(a ->{
-                player.play();
-            });
-            cwContainer.add(startButton);
 //            停止ボタン
-            button pauseButton = new button("Pause",400,200);
-            pauseButton.addActionListener(a ->
-                    player.pause());
-            cwContainer.add(pauseButton);
+
             button tackleButton = new button("Tackle",400,200);
             tackleButton.addActionListener(a->
                     System.out.println(player.getCurrentTime() + " Tackle"));
             cwContainer.add(tackleButton);
             button scrumButton = new button("Scrum",400,200);
+            scrumButton.addActionListener(a->
+                    System.out.println(player.getCurrentTime() + " Scrum"));
             cwContainer.add(scrumButton);
             button lineOutButton = new button("Lineout",400,200);
+            lineOutButton.addActionListener(a->
+                    System.out.println(player.getCurrentTime()+ " Lineout"));
             cwContainer.add(lineOutButton);
             setLayout(new FlowLayout());
         }
