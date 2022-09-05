@@ -66,4 +66,10 @@ FileWriter fw;
                 hour, minute, second);
         return time;
     }
+
+//    csvを読み込んで映像とリンク
+//    branch2 first commit
+    public DataObject getDataFromCsv(){
+//        TODO
+    }
 }
