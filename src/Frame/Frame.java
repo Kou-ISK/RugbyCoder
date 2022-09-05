@@ -14,18 +14,19 @@ import java.awt.*;
 import java.io.File;
 
 public class Frame{
+    private Logic logic;
     public static void main(String[] args) throws Exception{
 //      Creating Media Player Window
         window videoWindow = new window("Rugby Coder", 700,450);
         //Input Video File Path
-        MoviePanel mp = new MoviePanel("");
+        MoviePanel mp = new MoviePanel("/Users/isakakou/Desktop/MAH00202.MP4");
         Logic logic = new Logic();
         logic.setName("mediaName");
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
         MediaPlayer player = mp.getPlayer();
 
-        codeWindow cWindow = new codeWindow("Code Window",player,500,800);
+        codeWindow cWindow = new codeWindow(logic,"Code Window",player,500,800);
         //Loading
         for(int i = 0;player.getStatus() != MediaPlayer.Status.READY;i++) {
             try {
@@ -84,12 +85,11 @@ class window extends JFrame {
     }
 
 class codeWindow extends JFrame{
-        codeWindow(String title, MediaPlayer player, int x, int y) {
+        codeWindow(Logic logic,String title, MediaPlayer player, int x, int y) {
             setTitle(title);
             setSize(x,y);
             Container cwContainer = this.getContentPane();
 //            停止ボタン
-Logic logic = new Logic();
             button tackleButton = new button("Tackle",400,200);
             tackleButton.addActionListener(a->{
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()),"Tackle");

@@ -7,7 +7,7 @@ import java.io.*;
 
 public class Logic {
     private String mediaName;
-    private String path = "/";
+    private String path = "/Users/isakakou/Desktop/";
 //    CSV形式で書き出し
     public void csvWriter(DataObject dataObject) {
         String timeCode = dataObject.getTimeCode();
@@ -48,7 +48,9 @@ FileWriter fw;
             pw.print("Timestamp");
             pw.print(",");
             pw.print("Action Name");
-            pw.print(",");
+            pw.println(",");
+            pw.close();
+            System.out.println("setname");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
