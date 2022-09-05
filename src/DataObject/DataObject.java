@@ -4,7 +4,7 @@ import java.time.Duration;
 
 public class DataObject {
 
-    public DataObject(String timeCode, Duration videoTime, String actionName, String actionQualifier) {
+    public DataObject(String timeCode, String actionName) {
         this.timeCode = timeCode;
         this.videoTime = videoTime;
         this.actionName = actionName;
