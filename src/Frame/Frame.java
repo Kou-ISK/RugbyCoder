@@ -1,11 +1,14 @@
 package Frame;
 
+import DataObject.DataObject;
+import Logic.Logic;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.scene.media.*;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -16,6 +19,8 @@ public class Frame{
         window videoWindow = new window("Rugby Coder", 700,450);
         //Input Video File Path
         MoviePanel mp = new MoviePanel("");
+        Logic logic = new Logic();
+        logic.setName("mediaName");
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
         MediaPlayer player = mp.getPlayer();
@@ -84,18 +89,24 @@ class codeWindow extends JFrame{
             setSize(x,y);
             Container cwContainer = this.getContentPane();
 //            停止ボタン
-
+Logic logic = new Logic();
             button tackleButton = new button("Tackle",400,200);
-            tackleButton.addActionListener(a->
-                    System.out.println(player.getCurrentTime() + " Tackle"));
+            tackleButton.addActionListener(a->{
+            DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()),"Tackle");
+                    logic.csvWriter(dto);
+        });
             cwContainer.add(tackleButton);
             button scrumButton = new button("Scrum",400,200);
             scrumButton.addActionListener(a->
-                    System.out.println(player.getCurrentTime() + " Scrum"));
+            {DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()),"Scrum");
+            logic.csvWriter(dto);
+            });
             cwContainer.add(scrumButton);
             button lineOutButton = new button("Lineout",400,200);
             lineOutButton.addActionListener(a->
-                    System.out.println(player.getCurrentTime()+ " Lineout"));
+            {DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()),"Lineout");
+                logic.csvWriter(dto);
+            });
             cwContainer.add(lineOutButton);
             setLayout(new FlowLayout());
         }
