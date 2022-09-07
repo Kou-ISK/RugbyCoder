@@ -1,14 +1,23 @@
 package Logic;
 
 import DataObject.DataObject;
+import javafx.scene.control.Slider;
 import javafx.util.Duration;
 
+import java.awt.*;
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class Logic {
     private String mediaName;
     private String path = "/Users/isakakou/Desktop/";
-//    CSV形式で書き出し
+    private Slider timeSlider;
+    private Label timeLabel;
+
+    //    CSV形式で書き出し
     public void csvWriter(DataObject dataObject) {
         String timeCode = dataObject.getTimeCode();
         String action = dataObject.getActionName();
@@ -69,7 +78,25 @@ FileWriter fw;
 
 //    csvを読み込んで映像とリンク
 //    branch2 first commit
-    public DataObject getDataFromCsv(){
-//        TODO
+    public Duration getDataFromCsv(String time){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Date date = null;
+        try {
+            date = sdf.parse("1970-01-01 " + time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return Duration.millis(date.getTime());
+    }
+
+
+    //Durationのフォーマッター。"MM:ss"形式
+    private String toStringMinSec (Duration dur){
+        int min = (int) Math.floor(dur.toMinutes());
+        int sec = (int) (Math.ceil(dur.toSeconds() % 60));
+        return String.format("%1$d:%2$02d", min, sec);
     }
 }
