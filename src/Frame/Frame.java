@@ -10,23 +10,31 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class Frame {
-    private Logic logic;
 
     public static void main(String[] args) throws Exception {
+        String mediaName = "mediaName";
+        String filePath = "/Users/isakakou/Desktop/MAH00202.MP4";
+        String fileName;
 //      Creating Media Player Window
         window videoWindow = new window("Rugby Coder", 700, 450);
         //Input Video File Path
-        MoviePanel mp = new MoviePanel("/Users/isakakou/Desktop/MAH00202.MP4");
+        MoviePanel mp = new MoviePanel(filePath);
         Logic logic = new Logic();
-        logic.setName("mediaName");
+        logic.setName(mediaName);
+        csvViewer csvViewer = new csvViewer(mediaName);
+        fileName = csvViewer.getFileName();
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
         MediaPlayer player = mp.getPlayer();
-
         codeWindow cWindow = new codeWindow(logic, "Code Window", player, 500, 800);
         //Loading
         for (int i = 0; player.getStatus() != MediaPlayer.Status.READY; i++) {
@@ -171,4 +179,48 @@ class MoviePanel extends JFXPanel {
     }
 
 
+}
+
+class csvViewer extends JFrame {
+    private final String fileName;
+    private final JTable table = new JTable();
+    private final JScrollPane jScrollPane = new JScrollPane(table);
+
+
+    csvViewer(String filename) throws IOException {
+        super(filename + " - CSVViewer");
+        fileName = "/Users/isakakou/Desktop/" + filename + ".csv";
+
+        readIn();
+        getContentPane().add(jScrollPane);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack();
+        show();
+    }
+
+    String getFileName() {
+        return fileName;
+    }
+
+    private void readIn() {
+        Pattern pattern = Pattern.compile(",");
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        try {
+            final BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String line;
+            for (int row = 0; (line = reader.readLine()) != null; row++) {
+                String[] items = pattern.split(line);
+                model.setRowCount(row + 1);
+                for (int column = 0; column < items.length; column++) {
+                    if (model.getColumnCount() <= column) {
+                        model.setColumnCount(column + 1);
+                    }
+                    table.setValueAt(items[column], row, column);
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
