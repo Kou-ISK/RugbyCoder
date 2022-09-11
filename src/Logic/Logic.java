@@ -49,21 +49,22 @@ public class Logic {
     public void setName(String mediaName) {
         this.mediaName = mediaName;
         FileWriter fw;
-        // 出力ファイルの作成
-        try {
-            fw = new FileWriter(path + mediaName + ".csv", true);
-            // PrintWriterクラスのオブジェクトを生成
-            PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
-            pw.print("Timestamp");
-            pw.print(",");
-            pw.print("Action Name");
-            pw.println(",");
-            pw.close();
-            System.out.println("setname");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        File file = new File(path + mediaName + ".csv");
+        if (!file.exists()) {
+            // 出力ファイルの作成
+            try {
+                fw = new FileWriter(path + mediaName + ".csv", true);
+                // PrintWriterクラスのオブジェクトを生成
+                PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
+                pw.print("Timestamp");
+                pw.print(",");
+                pw.print("Action Name");
+                pw.println(",");
+                pw.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-
     }
 
     public String getTimeStamp(Duration duration) {

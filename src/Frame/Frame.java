@@ -42,7 +42,7 @@ public class Frame {
         Media media = mp.getMedia();
         MediaPlayer player = mp.getPlayer();
 
-        codeWindow cWindow = new codeWindow(logic, "Code Window", player, 500, 800);
+        codeWindow cWindow = new codeWindow(logic, csvViewer, "Code Window", player, 500, 800);
         //Loading
         for (int i = 0; player.getStatus() != MediaPlayer.Status.READY; i++) {
             try {
@@ -129,7 +129,9 @@ class window extends JFrame {
 }
 
 class codeWindow extends JFrame {
-    codeWindow(Logic logic, String title, MediaPlayer player, int x, int y) {
+    private csvViewer csvViewer;
+
+    codeWindow(Logic logic, csvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
         setTitle(title);
         setSize(x, y);
         Container cwContainer = this.getContentPane();
@@ -138,6 +140,7 @@ class codeWindow extends JFrame {
         tackleButton.addActionListener(a -> {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Tackle");
             logic.csvWriter(dto);
+            csvViewer.readIn();
         });
         cwContainer.add(tackleButton);
         button scrumButton = new button("Scrum", 400, 200);
@@ -145,6 +148,7 @@ class codeWindow extends JFrame {
         {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
             logic.csvWriter(dto);
+            csvViewer.readIn();
         });
         cwContainer.add(scrumButton);
         button lineOutButton = new button("Lineout", 400, 200);
@@ -152,6 +156,7 @@ class codeWindow extends JFrame {
         {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Lineout");
             logic.csvWriter(dto);
+            csvViewer.readIn();
         });
         cwContainer.add(lineOutButton);
         setLayout(new FlowLayout());
@@ -248,7 +253,7 @@ class csvViewer extends JFrame {
         return fileName;
     }
 
-    private void readIn() {
+    void readIn() {
         Pattern pattern = Pattern.compile(",");
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         try {
