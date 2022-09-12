@@ -26,8 +26,8 @@ import static java.util.Objects.isNull;
 
 public class Frame {
     public static void main(String[] args) throws Exception {
-        String mediaName = "mediaName";
-        String filePath = "/Users/isakakou/Desktop/ドラゴンクエストⅤ 序曲のマーチ.mp4";
+        String mediaName = "MAH00202";
+        String filePath = "/Users/isakakou/Desktop/" + mediaName + ".mp4";
         String fileName;
 //      Creating Media Player Window
         window videoWindow = new window("Rugby Coder", 700, 450);
@@ -37,10 +37,21 @@ public class Frame {
         Logic logic = new Logic();
         logic.setName(mediaName);
         csvViewer csvViewer = new csvViewer(mediaName);
+
         fileName = csvViewer.getFileName();
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
         MediaPlayer player = mp.getPlayer();
+
+        JTable table = csvViewer.getTable();
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int row = table.rowAtPoint(evt.getPoint());
+                String timeCode = (String) table.getValueAt(row, 0);
+                player.seek(logic.getDataFromCsv(timeCode));
+            }
+        });
 
         codeWindow cWindow = new codeWindow(logic, csvViewer, "Code Window", player, 500, 800);
         //Loading
@@ -234,9 +245,10 @@ class MoviePanel extends JFXPanel {
 
 class csvViewer extends JFrame {
     private final String fileName;
-    private final JTable table = new JTable();
+    private String[] header = {"TimeStamp", "Action"};
+    private DefaultTableModel tableModel = new DefaultTableModel(null, header);
+    private final JTable table = new JTable(tableModel);
     private final JScrollPane jScrollPane = new JScrollPane(table);
-
 
     csvViewer(String filename) throws IOException {
         super(filename + " - CSVViewer");
@@ -252,6 +264,11 @@ class csvViewer extends JFrame {
     String getFileName() {
         return fileName;
     }
+
+    JTable getTable() {
+        return table;
+    }
+
 
     void readIn() {
         Pattern pattern = Pattern.compile(",");
@@ -269,6 +286,7 @@ class csvViewer extends JFrame {
                     table.setValueAt(items[column], row, column);
                 }
             }
+            table.setAutoCreateRowSorter(true);
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();

@@ -54,13 +54,6 @@ public class Logic {
             // 出力ファイルの作成
             try {
                 fw = new FileWriter(path + mediaName + ".csv", true);
-                // PrintWriterクラスのオブジェクトを生成
-                PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
-                pw.print("Timestamp");
-                pw.print(",");
-                pw.print("Action Name");
-                pw.println(",");
-                pw.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
