@@ -13,6 +13,7 @@ import java.util.TimeZone;
 
 public class Logic {
     private String mediaName;
+    private String filePath;
     private String path = "/Users/isakakou/Desktop/";
     private Slider timeSlider;
     private Label timeLabel;
@@ -45,8 +46,19 @@ public class Logic {
         }
     }
 
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 
-    public void setName(String mediaName) {
+    public String getMediaName() {
+        return mediaName;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setMediaName(String mediaName) {
         this.mediaName = mediaName;
         FileWriter fw;
         File file = new File(path + mediaName + ".csv");
