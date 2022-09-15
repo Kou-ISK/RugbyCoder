@@ -3,15 +3,18 @@ package Frame;
 import DataObject.DataObject;
 import DataObject.timeObject;
 import Logic.Logic;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -20,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 class MakeFrames {
@@ -103,30 +105,42 @@ class MakeFrames {
         cWindow.setLocation(900, 0);
 
         //動画の再生
-//指定した時間へとジャンプ
+        // 指定した時間へとジャンプ
         Slider s = mp.getSlider();
         timeObject to = new timeObject();
-        s.valueProperty().addListener((
-                ObservableValue<? extends Number> ov,
-                Number old_val, Number new_val) -> {
-            to.setNow(new_val.intValue());
-            System.out.println(to.getNow());
-            int now = to.getNow();
-            if (Objects.isNull(now)) {
-                player.seek(logic.getDataFromCsv("00:00:00"));
-            } else {
-                int rawTime = to.getNow();
-                int second = rawTime % 60;
-                int minute = ((rawTime % 3600) / 60);
-                int hour = rawTime / 3600;
-                String time = String.format("%02d:%02d:%02d",
-                        hour, minute, second);
-                player.seek(logic.getDataFromCsv(time));
-
-            }
-        });
 
 
+//        s.valueProperty().addListener((
+//                ObservableValue<? extends Number> ov,
+//                Number old_val, Number new_val) -> {
+//            to.setNow(new_val.intValue());
+//            int now = to.getNow();
+//            if (Objects.isNull(now)) {
+//                player.seek(logic.getDataFromCsv("00:00:00"));
+//            } else {
+//                int rawTime = to.getNow();
+//                int second = rawTime % 60;
+//                int minute = ((rawTime % 3600) / 60);
+//                int hour = rawTime / 3600;
+//                String time = String.format("%02d:%02d:%02d",
+//                        hour, minute, second);
+//                player.seek(logic.getDataFromCsv(time));
+//            }
+//        });
+
+        ChangeListener<? super Duration> playListener = (ov, old, current) ->
+        {
+            // スライダを移動
+            s.setValue(player.getCurrentTime().toSeconds());
+        };
+        player.currentTimeProperty().addListener(playListener);
+        // スライダを操作するとシークする
+        EventHandler<MouseEvent> sliderHandler = (e) ->
+        {
+            // スライダを操作すると、シークする
+            player.seek(Duration.seconds(s.getValue()));
+        };
+        s.addEventFilter(MouseEvent.MOUSE_RELEASED, sliderHandler);
         player.play();
         System.out.println("Current: " + player.getCurrentTime());
         System.out.println(player.getStopTime());
