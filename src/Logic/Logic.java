@@ -37,6 +37,8 @@ public class Logic {
             pw.print(timeCode);
             pw.print(",");
             pw.print(action);
+            pw.print(",");
+            pw.print(qualifier);
             pw.println();
             pw.flush();
             pw.close();

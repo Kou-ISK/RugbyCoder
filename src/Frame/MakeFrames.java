@@ -19,11 +19,10 @@ import javafx.util.Duration;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.regex.Pattern;
+
+import static Frame.MakeFrames.directoryPath;
 
 class MakeFrames {
     private String filePath;
@@ -108,25 +107,6 @@ class MakeFrames {
         // 指定した時間へとジャンプ
         Slider s = mp.getSlider();
         timeObject to = new timeObject();
-
-
-//        s.valueProperty().addListener((
-//                ObservableValue<? extends Number> ov,
-//                Number old_val, Number new_val) -> {
-//            to.setNow(new_val.intValue());
-//            int now = to.getNow();
-//            if (Objects.isNull(now)) {
-//                player.seek(logic.getDataFromCsv("00:00:00"));
-//            } else {
-//                int rawTime = to.getNow();
-//                int second = rawTime % 60;
-//                int minute = ((rawTime % 3600) / 60);
-//                int hour = rawTime / 3600;
-//                String time = String.format("%02d:%02d:%02d",
-//                        hour, minute, second);
-//                player.seek(logic.getDataFromCsv(time));
-//            }
-//        });
 
         ChangeListener<? super Duration> playListener = (ov, old, current) ->
         {
@@ -225,7 +205,7 @@ class MoviePanel extends JFXPanel {
 
 class csvViewer extends JFrame {
     private final String fileName;
-    private final String[] header = {"TimeStamp", "Action"};
+    private final String[] header = {"TimeStamp", "Action", "Detail"};
     private final DefaultTableModel tableModel = new DefaultTableModel(null, header);
     private final JTable table = new JTable(tableModel);
     private final JScrollPane jScrollPane = new JScrollPane(table);
@@ -236,6 +216,8 @@ class csvViewer extends JFrame {
 
         readIn();
         getContentPane().add(jScrollPane);
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        setDefaultCloseOperation(saveCsvFile());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         show();
@@ -244,6 +226,37 @@ class csvViewer extends JFrame {
     String getFileName() {
         return fileName;
     }
+
+    private int saveCsvFile() {
+//        TODO JTable上での編集内容の上書き保存ができない
+        for (int i = 0; i < table.getRowCount(); i++) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                sb.append(table.getValueAt(i, j)).append(",");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+            File file = new File(fileName);
+            if (!file.canWrite()) {
+                // 書き込み可能に変更
+                file.setWritable(true);
+            }
+
+            PrintWriter pw;
+            try (FileWriter fw = new FileWriter(file, false)) {
+                // PrintWriterクラスのオブジェクトを生成
+                pw = new PrintWriter(new BufferedWriter(fw));
+
+                pw.write(sb.toString());
+                pw.println();
+                pw.flush();
+            } catch (IOException e) {
+                System.out.println("あかんわ");
+                throw new RuntimeException(e);
+            }
+        }
+        return 1;
+    }
+
 
     JTable getTable() {
         return table;
@@ -274,6 +287,7 @@ class csvViewer extends JFrame {
     }
 }
 
+
 class codeWindow extends JFrame {
     private csvViewer csvViewer;
 
@@ -286,7 +300,7 @@ class codeWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         tackleButton.addActionListener(a -> {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Tackle");
-            logic.csvWriter(MakeFrames.directoryPath, dto);
+            logic.csvWriter(directoryPath, dto);
             csvViewer.readIn();
         });
         cwContainer.add(tackleButton);
@@ -294,7 +308,7 @@ class codeWindow extends JFrame {
         scrumButton.addActionListener(a ->
         {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
-            logic.csvWriter(MakeFrames.directoryPath, dto);
+            logic.csvWriter(directoryPath, dto);
             csvViewer.readIn();
         });
         cwContainer.add(scrumButton);
@@ -302,7 +316,7 @@ class codeWindow extends JFrame {
         lineOutButton.addActionListener(a ->
         {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Lineout");
-            logic.csvWriter(MakeFrames.directoryPath, dto);
+            logic.csvWriter(directoryPath, dto);
             csvViewer.readIn();
         });
         cwContainer.add(lineOutButton);

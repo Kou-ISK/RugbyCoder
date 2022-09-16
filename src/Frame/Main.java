@@ -13,7 +13,6 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 //        TODO パッケージにまとめる
-//        TODO 絶対パスの取得(できた)
         Logic logic = new Logic();
         mainView mv = new mainView("Main", 500, 500);
         mv.setVisible(true);
