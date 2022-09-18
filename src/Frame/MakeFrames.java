@@ -218,13 +218,17 @@ class csvViewer extends JFrame {
         getContentPane().add(jScrollPane);
         table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         setDefaultCloseOperation(saveCsvFile());
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         show();
     }
 
     String getFileName() {
         return fileName;
+    }
+
+    void addRow(DataObject dto) {
+        Object[] dataList = {dto.getTimeCode(), dto.getActionName(), ""};
+        tableModel.addRow(dataList);
     }
 
     private int saveCsvFile() {
@@ -241,14 +245,12 @@ class csvViewer extends JFrame {
                 file.setWritable(true);
             }
 
-            PrintWriter pw;
-            try (FileWriter fw = new FileWriter(file, false)) {
+            try (FileWriter fw = new FileWriter(file)) {
                 // PrintWriterクラスのオブジェクトを生成
-                pw = new PrintWriter(new BufferedWriter(fw));
-
-                pw.write(sb.toString());
-                pw.println();
-                pw.flush();
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(sb.toString());
+                bw.newLine();
+                bw.flush();
             } catch (IOException e) {
                 System.out.println("あかんわ");
                 throw new RuntimeException(e);
@@ -263,7 +265,7 @@ class csvViewer extends JFrame {
     }
 
 
-    void readIn() {
+    private void readIn() {
         Pattern pattern = Pattern.compile(",");
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         try {
@@ -301,7 +303,7 @@ class codeWindow extends JFrame {
         tackleButton.addActionListener(a -> {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Tackle");
             logic.csvWriter(directoryPath, dto);
-            csvViewer.readIn();
+            csvViewer.addRow(dto);
         });
         cwContainer.add(tackleButton);
         button scrumButton = new button("Scrum", 400, 200);
@@ -309,7 +311,7 @@ class codeWindow extends JFrame {
         {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
             logic.csvWriter(directoryPath, dto);
-            csvViewer.readIn();
+            csvViewer.addRow(dto);
         });
         cwContainer.add(scrumButton);
         button lineOutButton = new button("Lineout", 400, 200);
@@ -317,7 +319,7 @@ class codeWindow extends JFrame {
         {
             DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Lineout");
             logic.csvWriter(directoryPath, dto);
-            csvViewer.readIn();
+            csvViewer.addRow(dto);
         });
         cwContainer.add(lineOutButton);
         setLayout(new FlowLayout());
