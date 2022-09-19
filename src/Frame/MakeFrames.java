@@ -3,33 +3,38 @@ package Frame;
 import DataObject.DataObject;
 import DataObject.timeObject;
 import Logic.Logic;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Objects;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
 import java.util.regex.Pattern;
+
+import static Frame.MakeFrames.directoryPath;
 
 class MakeFrames {
     private String filePath;
     private String mediaName;
+    static String directoryPath;
 
-    void makeFrames(String filePath, String mediaName) throws Exception {
+    void makeFrames(String directoryPath, String filePath, String mediaName) throws Exception {
         this.filePath = filePath;
         this.mediaName = mediaName;
+        this.directoryPath = directoryPath;
         Logic logic = new Logic();
         String fileName;
 //      Creating Media Player Window
@@ -37,8 +42,8 @@ class MakeFrames {
         //Input Video File Path
         MoviePanel mp = new MoviePanel(filePath);
 
-        logic.setMediaName(mediaName);
-        csvViewer csvViewer = new csvViewer(mediaName);
+        logic.setMediaName(directoryPath, mediaName);
+        csvViewer csvViewer = new csvViewer(directoryPath, mediaName);
 
         fileName = csvViewer.getFileName();
         //JavaFX動画インスタンスとプレイヤーを取得
@@ -56,6 +61,31 @@ class MakeFrames {
         });
 
         codeWindow cWindow = new codeWindow(logic, csvViewer, "Code Window", player, 500, 800);
+//        保存して終了
+        cWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                csvViewer.saveCsvFile();
+                System.exit(0);
+            }
+        });
+        //        保存して終了
+        csvViewer.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                csvViewer.saveCsvFile();
+                System.exit(0);
+            }
+        });
+        //        保存して終了
+        videoWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                csvViewer.saveCsvFile();
+                System.exit(0);
+            }
+        });
+
         //Loading
         for (int i = 0; player.getStatus() != MediaPlayer.Status.READY; i++) {
             try {
@@ -101,196 +131,224 @@ class MakeFrames {
         cWindow.setLocation(900, 0);
 
         //動画の再生
-//指定した時間へとジャンプ
+        // 指定した時間へとジャンプ
         Slider s = mp.getSlider();
         timeObject to = new timeObject();
-        s.valueProperty().addListener((
-                ObservableValue<? extends Number> ov,
-                Number old_val, Number new_val) -> {
-            to.setNow(new_val.intValue());
-            System.out.println(to.getNow());
-            int now = to.getNow();
-            if (Objects.isNull(now)) {
-                player.seek(logic.getDataFromCsv("00:00:00"));
-            } else {
-                int rawTime = to.getNow();
-                int second = rawTime % 60;
-                int minute = ((rawTime % 3600) / 60);
-                int hour = rawTime / 3600;
-                String time = String.format("%02d:%02d:%02d",
-                        hour, minute, second);
-                player.seek(logic.getDataFromCsv(time));
 
-            }
-        });
-
-
+        ChangeListener<? super Duration> playListener = (ov, old, current) ->
+        {
+            // スライダを移動
+            s.setValue(player.getCurrentTime().toSeconds());
+        };
+        player.currentTimeProperty().addListener(playListener);
+        // スライダを操作するとシークする
+        EventHandler<MouseEvent> sliderHandler = (e) ->
+        {
+            // スライダを操作すると、シークする
+            player.seek(Duration.seconds(s.getValue()));
+        };
+        s.addEventFilter(MouseEvent.MOUSE_RELEASED, sliderHandler);
         player.play();
         System.out.println("Current: " + player.getCurrentTime());
         System.out.println(player.getStopTime());
     }
+}
 
-    static class window extends JFrame {
-        window(String title, int x, int y) {
-            setTitle(title);
-            setSize(x, y);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        }
+class window extends JFrame {
+    window(String title, int x, int y) {
+        setTitle(title);
+        setSize(x, y);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+}
+
+class button extends JButton {
+    button(String title, int x, int y) {
+        setText(title);
+        setSize(x, y);
+    }
+}
+
+//動画再生パネルクラス
+class MoviePanel extends JFXPanel {
+    private final Media media;
+    private final MediaPlayer player;
+    private int sliderTime;
+    private final Slider slider;
+
+    MoviePanel(String filePath) {
+
+        //JavaFXルートパネル
+        StackPane root = new StackPane();
+
+        // 動画ファイルのパスを取得
+        File f = new File(filePath);
+
+        // 動画再生クラスをインスタンス化
+        media = new Media(f.toURI().toString());
+        player = new MediaPlayer(media);
+        MediaView mediaView = new MediaView(player);
+        root.getChildren().add(0, mediaView);
+        int totalTime = (int) player.getTotalDuration().toSeconds();
+        slider = new Slider(0, totalTime, 0);
+        slider.increment();
+        int sliderTime = (int) slider.getValue();
+        root.getChildren().add(1, slider);
+        StackPane.setAlignment(slider, Pos.BOTTOM_CENTER);
+
+
+        int rawTime = (int) media.getDuration().toSeconds();
+        int second = rawTime % 60;
+        int minute = ((rawTime % 3600) / 60);
+        int hour = rawTime / 3600;
+
+        //HH:mm:ss形式で時間を取得
+        String time = String.format("%02d:%02d:%02d",
+                hour, minute, second);
+        System.out.println(time);
+        //JavaFXScene
+        Scene scene = new Scene(root);
+        //JFXPanelにSceneをセット
+        setScene(scene);
     }
 
-    static class button extends JButton {
-        button(String title, int x, int y) {
-            setText(title);
-            setSize(x, y);
-        }
+    int getSliderTime() {
+        this.sliderTime = (int) slider.getValue();
+        return this.sliderTime;
     }
 
-    //動画再生パネルクラス
-    static class MoviePanel extends JFXPanel {
-        private final Media media;
-        private final MediaPlayer player;
-        private int sliderTime;
-        private final Slider slider;
-
-        MoviePanel(String filePath) {
-
-            //JavaFXルートパネル
-            StackPane root = new StackPane();
-
-            // 動画ファイルのパスを取得
-            File f = new File(filePath);
-
-            // 動画再生クラスをインスタンス化
-            media = new Media(f.toURI().toString());
-            player = new MediaPlayer(media);
-            MediaView mediaView = new MediaView(player);
-            root.getChildren().add(0, mediaView);
-            int totalTime = (int) player.getTotalDuration().toSeconds();
-            slider = new Slider(0, totalTime, 0);
-            slider.increment();
-            int sliderTime = (int) slider.getValue();
-            root.getChildren().add(1, slider);
-            StackPane.setAlignment(slider, Pos.BOTTOM_CENTER);
-
-
-            int rawTime = (int) media.getDuration().toSeconds();
-            int second = rawTime % 60;
-            int minute = ((rawTime % 3600) / 60);
-            int hour = rawTime / 3600;
-
-            //HH:mm:ss形式で時間を取得
-            String time = String.format("%02d:%02d:%02d",
-                    hour, minute, second);
-            System.out.println(time);
-            //JavaFXScene
-            Scene scene = new Scene(root);
-            //JFXPanelにSceneをセット
-            setScene(scene);
-        }
-
-        int getSliderTime() {
-            this.sliderTime = (int) slider.getValue();
-            return this.sliderTime;
-        }
-
-        Media getMedia() {
-            return media;
-        }
-
-        MediaPlayer getPlayer() {
-            return player;
-        }
-
-        Slider getSlider() {
-            return slider;
-        }
+    Media getMedia() {
+        return media;
     }
 
-    static class csvViewer extends JFrame {
-        private final String fileName;
-        private final String[] header = {"TimeStamp", "Action"};
-        private final DefaultTableModel tableModel = new DefaultTableModel(null, header);
-        private final JTable table = new JTable(tableModel);
-        private final JScrollPane jScrollPane = new JScrollPane(table);
+    MediaPlayer getPlayer() {
+        return player;
+    }
 
-        csvViewer(String filename) throws IOException {
-            super(filename + " - CSVViewer");
-            fileName = "/Users/isakakou/Desktop/" + filename + ".csv";
+    Slider getSlider() {
+        return slider;
+    }
+}
 
-            readIn();
-            getContentPane().add(jScrollPane);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            pack();
-            show();
+class csvViewer extends JFrame {
+    private final String fileName;
+    private final String[] header = {"TimeStamp", "Action", "Detail"};
+    private final DefaultTableModel tableModel = new DefaultTableModel(null, header);
+    private final JTable table = new JTable(tableModel);
+    private final JScrollPane jScrollPane = new JScrollPane(table);
+
+    csvViewer(String directoryPath, String filename) throws IOException {
+        super(filename + " - TimeLine");
+        fileName = directoryPath + "/" + filename + ".csv";
+
+        readIn();
+        getContentPane().add(jScrollPane);
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+        pack();
+        show();
+    }
+
+    String getFileName() {
+        return fileName;
+    }
+
+    void addRow(DataObject dto) {
+        Object[] dataList = {dto.getTimeCode(), dto.getActionName(), ""};
+        tableModel.addRow(dataList);
+    }
+
+    void saveCsvFile() {
+        File file = new File(fileName);
+        if (!file.canWrite()) {
+            // 書き込み可能に変更
+            file.setWritable(true);
         }
 
-        String getFileName() {
-            return fileName;
-        }
-
-        JTable getTable() {
-            return table;
-        }
-
-
-        void readIn() {
-            Pattern pattern = Pattern.compile(",");
-            DefaultTableModel model = (DefaultTableModel) table.getModel();
-            try {
-                final BufferedReader reader = new BufferedReader(new FileReader(fileName));
-                String line;
-                for (int row = 0; (line = reader.readLine()) != null; row++) {
-                    String[] items = pattern.split(line);
-                    model.setRowCount(row + 1);
-                    for (int column = 0; column < items.length; column++) {
-                        if (model.getColumnCount() <= column) {
-                            model.setColumnCount(column + 1);
-                        }
-                        table.setValueAt(items[column], row, column);
-                    }
+        try (FileWriter fw = new FileWriter(file, false)) {
+            // PrintWriterクラスのオブジェクトを生成
+            BufferedWriter bw = new BufferedWriter(fw);
+            for (int i = 0; i < table.getRowCount(); i++) {
+                StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < table.getColumnCount(); j++) {
+                    sb.append(table.getValueAt(i, j)).append(",");
                 }
-                table.setAutoCreateRowSorter(true);
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                sb.deleteCharAt(sb.length() - 1);
+                bw.write(sb.toString());
+                bw.newLine();
+                bw.flush();
             }
+            bw.close();
+        } catch (IOException e) {
+            System.out.println("あかんわ");
+            throw new RuntimeException(e);
         }
+        System.out.println("OK");
     }
 
-    class codeWindow extends JFrame {
-        private csvViewer csvViewer;
 
-        codeWindow(Logic logic, csvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
-            setTitle(title);
-            setSize(x, y);
-            Container cwContainer = this.getContentPane();
-//            停止ボタン
-            button tackleButton = new button("Tackle", 400, 200);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            tackleButton.addActionListener(a -> {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Tackle");
-                logic.csvWriter(dto);
-                csvViewer.readIn();
-            });
-            cwContainer.add(tackleButton);
-            button scrumButton = new button("Scrum", 400, 200);
-            scrumButton.addActionListener(a ->
-            {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
-                logic.csvWriter(dto);
-                csvViewer.readIn();
-            });
-            cwContainer.add(scrumButton);
-            button lineOutButton = new button("Lineout", 400, 200);
-            lineOutButton.addActionListener(a ->
-            {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Lineout");
-                logic.csvWriter(dto);
-                csvViewer.readIn();
-            });
-            cwContainer.add(lineOutButton);
-            setLayout(new FlowLayout());
+    JTable getTable() {
+        return table;
+    }
+
+
+    private void readIn() {
+        Pattern pattern = Pattern.compile(",");
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        try {
+            final BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            String line;
+            for (int row = 0; (line = reader.readLine()) != null; row++) {
+                String[] items = pattern.split(line);
+                model.setRowCount(row + 1);
+                for (int column = 0; column < items.length; column++) {
+                    if (model.getColumnCount() <= column) {
+                        model.setColumnCount(column + 1);
+                    }
+                    table.setValueAt(items[column], row, column);
+                }
+            }
+            table.setAutoCreateRowSorter(true);
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+}
+
+
+class codeWindow extends JFrame {
+    private csvViewer csvViewer;
+
+    codeWindow(Logic logic, csvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
+        setTitle(title);
+        setSize(x, y);
+        Container cwContainer = this.getContentPane();
+//            停止ボタン
+        button tackleButton = new button("Tackle", 400, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        tackleButton.addActionListener(a -> {
+            DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Tackle");
+            logic.csvWriter(directoryPath, dto);
+            csvViewer.addRow(dto);
+        });
+        cwContainer.add(tackleButton);
+        button scrumButton = new button("Scrum", 400, 200);
+        scrumButton.addActionListener(a ->
+        {
+            DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
+            logic.csvWriter(directoryPath, dto);
+            csvViewer.addRow(dto);
+        });
+        cwContainer.add(scrumButton);
+        button lineOutButton = new button("Lineout", 400, 200);
+        lineOutButton.addActionListener(a ->
+        {
+            DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Lineout");
+            logic.csvWriter(directoryPath, dto);
+            csvViewer.addRow(dto);
+        });
+        cwContainer.add(lineOutButton);
+        setLayout(new FlowLayout());
     }
 }
 

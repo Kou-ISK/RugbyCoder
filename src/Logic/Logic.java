@@ -14,18 +14,17 @@ import java.util.TimeZone;
 public class Logic {
     private String mediaName;
     private String filePath;
-    private String path = "/Users/isakakou/Desktop/";
     private Slider timeSlider;
     private Label timeLabel;
 
     //    CSV形式で書き出し
-    public void csvWriter(DataObject dataObject) {
+    public void csvWriter(String directoryPath, DataObject dataObject) {
         String timeCode = dataObject.getTimeCode();
         String action = dataObject.getActionName();
         String qualifier = dataObject.getActionQualifier();
         FileWriter fw;
         try {
-            File file = new File(path + mediaName + ".csv");
+            File file = new File(directoryPath + mediaName + ".csv");
             // 書き込み権限の確認
             if (!file.canWrite()) {
                 // 書き込み可能に変更
@@ -38,6 +37,8 @@ public class Logic {
             pw.print(timeCode);
             pw.print(",");
             pw.print(action);
+            pw.print(",");
+            pw.print("");
             pw.println();
             pw.flush();
             pw.close();
@@ -58,14 +59,14 @@ public class Logic {
         return filePath;
     }
 
-    public void setMediaName(String mediaName) {
+    public void setMediaName(String directoryPath, String mediaName) {
         this.mediaName = mediaName;
         FileWriter fw;
-        File file = new File(path + mediaName + ".csv");
+        File file = new File(directoryPath + mediaName + ".csv");
         if (!file.exists()) {
             // 出力ファイルの作成
             try {
-                fw = new FileWriter(path + mediaName + ".csv", true);
+                fw = new FileWriter(directoryPath + mediaName + ".csv", true);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
