@@ -19,6 +19,8 @@ import javafx.util.Duration;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.regex.Pattern;
 
@@ -59,6 +61,31 @@ class MakeFrames {
         });
 
         codeWindow cWindow = new codeWindow(logic, csvViewer, "Code Window", player, 500, 800);
+//        保存して終了
+        cWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                csvViewer.saveCsvFile();
+                System.exit(0);
+            }
+        });
+        //        保存して終了
+        csvViewer.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                csvViewer.saveCsvFile();
+                System.exit(0);
+            }
+        });
+        //        保存して終了
+        videoWindow.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                csvViewer.saveCsvFile();
+                System.exit(0);
+            }
+        });
+
         //Loading
         for (int i = 0; player.getStatus() != MediaPlayer.Status.READY; i++) {
             try {
@@ -217,7 +244,6 @@ class csvViewer extends JFrame {
         readIn();
         getContentPane().add(jScrollPane);
         table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-        setDefaultCloseOperation(saveCsvFile());
         pack();
         show();
     }
@@ -231,32 +257,32 @@ class csvViewer extends JFrame {
         tableModel.addRow(dataList);
     }
 
-    private int saveCsvFile() {
-//        TODO JTable上での編集内容の上書き保存ができない
-        for (int i = 0; i < table.getRowCount(); i++) {
-            StringBuilder sb = new StringBuilder();
-            for (int j = 0; j < table.getColumnCount(); j++) {
-                sb.append(table.getValueAt(i, j)).append(",");
-            }
-            sb.deleteCharAt(sb.length() - 1);
-            File file = new File(fileName);
-            if (!file.canWrite()) {
-                // 書き込み可能に変更
-                file.setWritable(true);
-            }
+    void saveCsvFile() {
+        File file = new File(fileName);
+        if (!file.canWrite()) {
+            // 書き込み可能に変更
+            file.setWritable(true);
+        }
 
-            try (FileWriter fw = new FileWriter(file)) {
-                // PrintWriterクラスのオブジェクトを生成
-                BufferedWriter bw = new BufferedWriter(fw);
+        try (FileWriter fw = new FileWriter(file, false)) {
+            // PrintWriterクラスのオブジェクトを生成
+            BufferedWriter bw = new BufferedWriter(fw);
+            for (int i = 0; i < table.getRowCount(); i++) {
+                StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < table.getColumnCount(); j++) {
+                    sb.append(table.getValueAt(i, j)).append(",");
+                }
+                sb.deleteCharAt(sb.length() - 1);
                 bw.write(sb.toString());
                 bw.newLine();
                 bw.flush();
-            } catch (IOException e) {
-                System.out.println("あかんわ");
-                throw new RuntimeException(e);
             }
+            bw.close();
+        } catch (IOException e) {
+            System.out.println("あかんわ");
+            throw new RuntimeException(e);
         }
-        return 1;
+        System.out.println("OK");
     }
 
 

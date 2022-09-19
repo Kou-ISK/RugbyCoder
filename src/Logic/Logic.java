@@ -38,7 +38,7 @@ public class Logic {
             pw.print(",");
             pw.print(action);
             pw.print(",");
-            pw.print("中身");
+            pw.print("");
             pw.println();
             pw.flush();
             pw.close();
