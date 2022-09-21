@@ -19,7 +19,8 @@ public class Logic {
 
     //    CSV形式で書き出し
     public void csvWriter(String directoryPath, DataObject dataObject) {
-        String timeCode = dataObject.getTimeCode();
+        String startTimeCode = dataObject.getStartTimeCode();
+        String endTimeCode = dataObject.getEndTimeCode();
         String action = dataObject.getActionName();
         String qualifier = dataObject.getActionQualifier();
         FileWriter fw;
@@ -34,7 +35,9 @@ public class Logic {
             fw = new FileWriter(file, true);
             // PrintWriterクラスのオブジェクトを生成
             PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
-            pw.print(timeCode);
+            pw.print(startTimeCode);
+            pw.print(",");
+            pw.print(endTimeCode);
             pw.print(",");
             pw.print(action);
             pw.print(",");

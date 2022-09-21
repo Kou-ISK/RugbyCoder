@@ -5,23 +5,36 @@ import java.time.Duration;
 public class DataObject {
 
     public DataObject(String timeCode, String actionName) {
-        this.timeCode = timeCode;
+        this.startTimeCode = timeCode;
         this.videoTime = videoTime;
         this.actionName = actionName;
         this.actionQualifier = actionQualifier;
     }
 
-    private String timeCode;
+    public DataObject(String actionName) {
+        this.actionName = actionName;
+    }
+
+    private String startTimeCode;
+    private String endTimeCode;
     private Duration videoTime;
     private String actionName;
     private String actionQualifier;
 
-    public String getTimeCode() {
-        return timeCode;
+    public String getStartTimeCode() {
+        return startTimeCode;
     }
 
-    public void setTimeCode(String timeCode) {
-        this.timeCode = timeCode;
+    public String getEndTimeCode() {
+        return endTimeCode;
+    }
+
+    public void setEndTimeCode(String timeCode) {
+        this.endTimeCode = timeCode;
+    }
+
+    public void setStartTimeCode(String timeCode) {
+        this.startTimeCode = timeCode;
     }
 
     public Duration getVideoTime() {

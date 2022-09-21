@@ -162,10 +162,33 @@ class window extends JFrame {
     }
 }
 
+
 class button extends JButton {
+    private DataObject dto;
+    private int buttonState;
+//    0:not pushed, 1:pushed, 2:not yet
+
+
     button(String title, int x, int y) {
         setText(title);
         setSize(x, y);
+        buttonState = 2;
+    }
+
+    int getButtonState() {
+        return this.buttonState;
+    }
+
+    void setButtonState(int buttonState) {
+        this.buttonState = buttonState;
+    }
+
+    void setDto(DataObject dto) {
+        this.dto = dto;
+    }
+
+    DataObject getDto() {
+        return dto;
     }
 }
 
@@ -232,7 +255,7 @@ class MoviePanel extends JFXPanel {
 
 class csvViewer extends JFrame {
     private final String fileName;
-    private final String[] header = {"TimeStamp", "Action", "Detail"};
+    private final String[] header = {"startTime", "endTime", "Action", "Detail"};
     private final DefaultTableModel tableModel = new DefaultTableModel(null, header);
     private final JTable table = new JTable(tableModel);
     private final JScrollPane jScrollPane = new JScrollPane(table);
@@ -253,7 +276,7 @@ class csvViewer extends JFrame {
     }
 
     void addRow(DataObject dto) {
-        Object[] dataList = {dto.getTimeCode(), dto.getActionName(), ""};
+        Object[] dataList = {dto.getStartTimeCode(), dto.getEndTimeCode(), dto.getActionName(), ""};
         tableModel.addRow(dataList);
     }
 
@@ -323,32 +346,79 @@ class codeWindow extends JFrame {
         setTitle(title);
         setSize(x, y);
         Container cwContainer = this.getContentPane();
+
 //            停止ボタン
         button tackleButton = new button("Tackle", 400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         tackleButton.addActionListener(a -> {
-            DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Tackle");
-            logic.csvWriter(directoryPath, dto);
-            csvViewer.addRow(dto);
+            int state = tackleButton.getButtonState();
+            if (state == 0 || state == 2) {
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Tackle");
+                tackleButton.setBorderPainted(false);
+                tackleButton.setDto(dto);
+                tackleButton.setForeground(Color.red);
+                tackleButton.setButtonState(1);
+            }
+            if (state == 1) {
+                tackleButton.setBorderPainted(true);
+                DataObject dto = tackleButton.getDto();
+                if (dto != null) {
+                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
+                    logic.csvWriter(directoryPath, dto);
+                    tackleButton.setForeground(Color.black);
+                    csvViewer.addRow(dto);
+                }
+                tackleButton.setButtonState(0);
+            }
         });
         cwContainer.add(tackleButton);
         button scrumButton = new button("Scrum", 400, 200);
-        scrumButton.addActionListener(a ->
-        {
-            DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
-            logic.csvWriter(directoryPath, dto);
-            csvViewer.addRow(dto);
+        scrumButton.addActionListener(a -> {
+            int state = scrumButton.getButtonState();
+            if (state == 0 || state == 2) {
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
+                scrumButton.setBorderPainted(false);
+                scrumButton.setDto(dto);
+                scrumButton.setForeground(Color.red);
+                scrumButton.setButtonState(1);
+            }
+            if (state == 1) {
+                scrumButton.setBorderPainted(true);
+                DataObject dto = scrumButton.getDto();
+                if (dto != null) {
+                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
+                    logic.csvWriter(directoryPath, dto);
+                    scrumButton.setForeground(Color.black);
+                    csvViewer.addRow(dto);
+                }
+                scrumButton.setButtonState(0);
+            }
         });
         cwContainer.add(scrumButton);
         button lineOutButton = new button("Lineout", 400, 200);
-        lineOutButton.addActionListener(a ->
-        {
-            DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Lineout");
-            logic.csvWriter(directoryPath, dto);
-            csvViewer.addRow(dto);
+        lineOutButton.addActionListener(a -> {
+            int state = lineOutButton.getButtonState();
+            if (state == 0 || state == 2) {
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Lineout");
+                lineOutButton.setBorderPainted(false);
+                lineOutButton.setDto(dto);
+                lineOutButton.setForeground(Color.red);
+                lineOutButton.setButtonState(1);
+            }
+            if (state == 1) {
+                lineOutButton.setBorderPainted(true);
+                DataObject dto = lineOutButton.getDto();
+                if (dto != null) {
+                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
+                    logic.csvWriter(directoryPath, dto);
+                    lineOutButton.setForeground(Color.black);
+                    csvViewer.addRow(dto);
+                }
+                lineOutButton.setButtonState(0);
+            }
         });
         cwContainer.add(lineOutButton);
-        setLayout(new FlowLayout());
+        setLayout(new GridLayout(3, 1));
     }
 }
 
