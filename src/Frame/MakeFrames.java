@@ -346,8 +346,6 @@ class codeWindow extends JFrame {
         setTitle(title);
         setSize(x, y);
         Container cwContainer = this.getContentPane();
-
-//            停止ボタン
         button tackleButton = new button("Tackle", 400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         tackleButton.addActionListener(a -> {
@@ -418,7 +416,54 @@ class codeWindow extends JFrame {
             }
         });
         cwContainer.add(lineOutButton);
-        setLayout(new GridLayout(3, 1));
+
+        button APosButton = new button("A TEAM", 400, 200);
+        APosButton.addActionListener(a -> {
+            int state = APosButton.getButtonState();
+            if (state == 0 || state == 2) {
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
+                APosButton.setBorderPainted(false);
+                APosButton.setDto(dto);
+                APosButton.setForeground(Color.red);
+                APosButton.setButtonState(1);
+            }
+            if (state == 1) {
+                APosButton.setBorderPainted(true);
+                DataObject dto = APosButton.getDto();
+                if (dto != null) {
+                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
+                    logic.csvWriter(directoryPath, dto);
+                    APosButton.setForeground(Color.black);
+                    csvViewer.addRow(dto);
+                }
+                APosButton.setButtonState(0);
+            }
+        });
+        cwContainer.add(APosButton);
+        button BPosButton = new button("B TEAM", 400, 200);
+        BPosButton.addActionListener(a -> {
+            int state = BPosButton.getButtonState();
+            if (state == 0 || state == 2) {
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "B TEAM");
+                BPosButton.setBorderPainted(false);
+                BPosButton.setDto(dto);
+                BPosButton.setForeground(Color.red);
+                BPosButton.setButtonState(1);
+            }
+            if (state == 1) {
+                BPosButton.setBorderPainted(true);
+                DataObject dto = BPosButton.getDto();
+                if (dto != null) {
+                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
+                    logic.csvWriter(directoryPath, dto);
+                    BPosButton.setForeground(Color.black);
+                    csvViewer.addRow(dto);
+                }
+                BPosButton.setButtonState(0);
+            }
+        });
+        cwContainer.add(BPosButton);
+        setLayout(new GridLayout(3, 2));
     }
 }
 
