@@ -41,7 +41,6 @@ class MakeFrames {
         window videoWindow = new window("Rugby Coder", 700, 450);
         //Input Video File Path
         MoviePanel mp = new MoviePanel(filePath);
-
         logic.setMediaName(directoryPath, mediaName);
         csvViewer csvViewer = new csvViewer(directoryPath, mediaName);
 
@@ -211,14 +210,14 @@ class MoviePanel extends JFXPanel {
         media = new Media(f.toURI().toString());
         player = new MediaPlayer(media);
         MediaView mediaView = new MediaView(player);
-        root.getChildren().add(0, mediaView);
+
         int totalTime = (int) player.getTotalDuration().toSeconds();
         slider = new Slider(0, totalTime, 0);
+        slider.setBlockIncrement(10);
         slider.increment();
         int sliderTime = (int) slider.getValue();
-        root.getChildren().add(1, slider);
-        StackPane.setAlignment(slider, Pos.BOTTOM_CENTER);
-
+        root.getChildren().addAll(mediaView, slider);
+        root.setAlignment(slider, Pos.BOTTOM_CENTER);
 
         int rawTime = (int) media.getDuration().toSeconds();
         int second = rawTime % 60;
@@ -232,7 +231,9 @@ class MoviePanel extends JFXPanel {
         //JavaFXScene
         Scene scene = new Scene(root);
         //JFXPanelにSceneをセット
+
         setScene(scene);
+
     }
 
     int getSliderTime() {
@@ -255,7 +256,7 @@ class MoviePanel extends JFXPanel {
 
 class csvViewer extends JFrame {
     private final String fileName;
-    private final String[] header = {"startTime", "endTime", "Action", "Detail"};
+    private final String[] header = {"startTime", "endTime", "Action", "Qualifier"};
     private final DefaultTableModel tableModel = new DefaultTableModel(null, header);
     private final JTable table = new JTable(tableModel);
     private final JScrollPane jScrollPane = new JScrollPane(table);
@@ -276,7 +277,7 @@ class csvViewer extends JFrame {
     }
 
     void addRow(DataObject dto) {
-        Object[] dataList = {dto.getStartTimeCode(), dto.getEndTimeCode(), dto.getActionName(), ""};
+        Object[] dataList = {dto.getStartTimeCode(), dto.getEndTimeCode(), dto.getActionName(), dto.getActionQualifier()};
         tableModel.addRow(dataList);
     }
 
@@ -356,6 +357,8 @@ class codeWindow extends JFrame {
                 tackleButton.setDto(dto);
                 tackleButton.setForeground(Color.red);
                 tackleButton.setButtonState(1);
+                qualifierWindow qw = new qualifierWindow(dto);
+                qw.setVisible(true);
             }
             if (state == 1) {
                 tackleButton.setBorderPainted(true);
@@ -379,6 +382,8 @@ class codeWindow extends JFrame {
                 scrumButton.setDto(dto);
                 scrumButton.setForeground(Color.red);
                 scrumButton.setButtonState(1);
+                qualifierWindow qw = new qualifierWindow(dto);
+                qw.setVisible(true);
             }
             if (state == 1) {
                 scrumButton.setBorderPainted(true);
@@ -402,6 +407,8 @@ class codeWindow extends JFrame {
                 lineOutButton.setDto(dto);
                 lineOutButton.setForeground(Color.red);
                 lineOutButton.setButtonState(1);
+                qualifierWindow qw = new qualifierWindow(dto);
+                qw.setVisible(true);
             }
             if (state == 1) {
                 lineOutButton.setBorderPainted(true);
@@ -418,10 +425,14 @@ class codeWindow extends JFrame {
         cwContainer.add(lineOutButton);
 
         button APosButton = new button("A TEAM", 400, 200);
+        button BPosButton = new button("B TEAM", 400, 200);
         APosButton.addActionListener(a -> {
+            if (BPosButton.getButtonState() == 1) {
+                BPosButton.doClick();
+            }
             int state = APosButton.getButtonState();
             if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "A TEAM");
                 APosButton.setBorderPainted(false);
                 APosButton.setDto(dto);
                 APosButton.setForeground(Color.red);
@@ -440,8 +451,12 @@ class codeWindow extends JFrame {
             }
         });
         cwContainer.add(APosButton);
-        button BPosButton = new button("B TEAM", 400, 200);
+
         BPosButton.addActionListener(a -> {
+
+            if (APosButton.getButtonState() == 1) {
+                APosButton.doClick();
+            }
             int state = BPosButton.getButtonState();
             if (state == 0 || state == 2) {
                 DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "B TEAM");
@@ -467,3 +482,35 @@ class codeWindow extends JFrame {
     }
 }
 
+class QButton extends JButton {
+    private Container parent;
+
+    QButton(String title, DataObject dto) {
+        setText(title);
+        this.parent = getParent();
+        addActionListener(a -> {
+            dto.setActionQualifier(title);
+            Component c = (Component) a.getSource();
+            Window w = SwingUtilities.getWindowAncestor(c);
+            w.dispose();
+        });
+    }
+}
+
+class qualifierWindow extends JFrame {
+    private DataObject dto;
+    private boolean close;
+
+    qualifierWindow(DataObject dto) {
+        setTitle("Qualifier");
+        this.dto = dto;
+        setSize(350, 100);
+        setLocation(900, 100);
+        setLayout(new GridLayout(1, 4));
+        add(new QButton("Won", dto));
+        add(new QButton("Stolen", dto));
+        add(new QButton("Success", dto));
+        add(new QButton("Miss", dto));
+        toFront();
+    }
+}
