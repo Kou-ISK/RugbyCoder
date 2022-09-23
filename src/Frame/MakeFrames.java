@@ -114,14 +114,21 @@ class MakeFrames {
         //再生ボタン
         button startButton = new button("Start", 1000, 400);
         startButton.addActionListener(a -> {
+            player.setRate(1.0);
             player.play();
         });
         videoWindow.add(startButton);
         button pauseButton = new button("Pause", 1000, 400);
-        pauseButton.addActionListener(a ->
-                player.pause());
+        pauseButton.addActionListener(a -> {
+            player.setRate(1.0);
+            player.pause();
+        });
         videoWindow.add(pauseButton);
-
+        button fastForward = new button("Fast Forward", 1000, 400);
+        fastForward.addActionListener(a -> {
+            player.setRate(8.0);
+        });
+        videoWindow.add(fastForward);
 
         videoWindow.setLayout(new FlowLayout());
         videoWindow.setVisible(true);
