@@ -1,20 +1,15 @@
 package Frame;
 
 import DataObject.DataObject;
-import DataObject.timeObject;
 import Logic.Logic;
-import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.util.Duration;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -102,6 +97,7 @@ class MakeFrames {
         mp.setPreferredSize(new Dimension(videoW, videoH));
         videoWindow.add(mp);
 
+
         //JFrame側のパネルサイズを動画に合わせる
         videoWindow.getContentPane().setPreferredSize(new Dimension(videoW, videoH + 100));
 
@@ -111,19 +107,6 @@ class MakeFrames {
         //中心に表示
         videoWindow.setLocationRelativeTo(null);
 
-        //再生ボタン
-        button startButton = new button("Start", 1000, 400);
-        startButton.addActionListener(a -> {
-            player.setRate(1.0);
-            player.play();
-        });
-        videoWindow.add(startButton);
-        button pauseButton = new button("Pause", 1000, 400);
-        pauseButton.addActionListener(a -> {
-            player.setRate(1.0);
-            player.pause();
-        });
-        videoWindow.add(pauseButton);
         button fastForward = new button("Fast Forward", 1000, 400);
         fastForward.addActionListener(a -> {
             player.setRate(8.0);
@@ -136,24 +119,7 @@ class MakeFrames {
         videoWindow.setLocation(0, 0);
         cWindow.setLocation(900, 0);
 
-        //動画の再生
-        // 指定した時間へとジャンプ
-        Slider s = mp.getSlider();
-        timeObject to = new timeObject();
 
-        ChangeListener<? super Duration> playListener = (ov, old, current) ->
-        {
-            // スライダを移動
-            s.setValue(player.getCurrentTime().toSeconds());
-        };
-        player.currentTimeProperty().addListener(playListener);
-        // スライダを操作するとシークする
-        EventHandler<MouseEvent> sliderHandler = (e) ->
-        {
-            // スライダを操作すると、シークする
-            player.seek(Duration.seconds(s.getValue()));
-        };
-        s.addEventFilter(MouseEvent.MOUSE_RELEASED, sliderHandler);
         player.play();
         System.out.println("Current: " + player.getCurrentTime());
         System.out.println(player.getStopTime());
@@ -208,8 +174,8 @@ class MoviePanel extends JFXPanel {
     MoviePanel(String filePath) {
 
         //JavaFXルートパネル
-        StackPane root = new StackPane();
-
+        BorderPane root = new BorderPane();
+        Pane mpane = new Pane();
         // 動画ファイルのパスを取得
         File f = new File(filePath);
 
@@ -217,14 +183,17 @@ class MoviePanel extends JFXPanel {
         media = new Media(f.toURI().toString());
         player = new MediaPlayer(media);
         MediaView mediaView = new MediaView(player);
-
+        mediaController mc = new mediaController(player);
         int totalTime = (int) player.getTotalDuration().toSeconds();
         slider = new Slider(0, totalTime, 0);
         slider.setBlockIncrement(10);
-        slider.increment();
+
         int sliderTime = (int) slider.getValue();
-        root.getChildren().addAll(mediaView, slider);
-        root.setAlignment(slider, Pos.BOTTOM_CENTER);
+//        root.getChildren().addAll(mediaView, mc);
+        mpane.getChildren().add(mediaView);
+        root.setCenter(mpane);
+        root.setBottom(mc);
+//        root.setAlignment(mc, Pos.BOTTOM_CENTER);
 
         int rawTime = (int) media.getDuration().toSeconds();
         int second = rawTime % 60;
@@ -521,3 +490,4 @@ class qualifierWindow extends JFrame {
         toFront();
     }
 }
+
