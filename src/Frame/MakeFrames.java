@@ -1,6 +1,7 @@
 package Frame;
 
 import DataObject.DataObject;
+import DataObject.teamDatas;
 import Logic.Logic;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
@@ -26,10 +27,10 @@ class MakeFrames {
     private String mediaName;
     static String directoryPath;
 
-    void makeFrames(String directoryPath, String filePath, String mediaName) throws Exception {
+    void makeFrames(String directoryPath, String filePath, String mediaName, teamDatas td) throws Exception {
         this.filePath = filePath;
         this.mediaName = mediaName;
-        this.directoryPath = directoryPath;
+        MakeFrames.directoryPath = directoryPath;
         Logic logic = new Logic();
         String fileName;
 //      Creating Media Player Window
@@ -54,7 +55,7 @@ class MakeFrames {
             }
         });
 
-        codeWindow cWindow = new codeWindow(logic, csvViewer, "Code Window", player, 500, 800);
+        codeWindow cWindow = new codeWindow(td, logic, csvViewer, "Code Window", player, 500, 800);
 //        保存して終了
         cWindow.addWindowListener(new WindowAdapter() {
             @Override
@@ -90,8 +91,8 @@ class MakeFrames {
         }
 
         //読み込み完了後なら動画サイズを取得できる
-        int videoW = media.getWidth() / 3 * 2;
-        int videoH = media.getHeight() / 3 * 2;
+        int videoW = media.getWidth();
+        int videoH = media.getHeight();
 
         //MoviePanelのサイズを動画に合わせてJFrameに追加
         mp.setPreferredSize(new Dimension(videoW, videoH));
@@ -164,6 +165,86 @@ class button extends JButton {
     }
 }
 
+class cwButton extends JButton {
+    private DataObject dto;
+    private int buttonState;
+//    0:not pushed, 1:pushed, 2:not yet
+
+    cwButton(String title, Logic logic, MediaPlayer player, csvViewer csvViewer, int x, int y) {
+        setText(title);
+        setSize(x, y);
+        buttonState = 2;
+        addActionListener(a -> {
+            int state = this.getButtonState();
+            if (state == 0 || state == 2) {
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), title);
+                this.setBorderPainted(false);
+                this.setDto(dto);
+                this.setForeground(Color.red);
+                this.setButtonState(1);
+                qualifierWindow qw = new qualifierWindow(dto);
+                qw.setVisible(true);
+            }
+            if (state == 1) {
+                this.setBorderPainted(true);
+                DataObject dto = this.getDto();
+                if (dto != null) {
+                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
+                    logic.csvWriter(directoryPath, dto);
+                    this.setForeground(Color.black);
+                    csvViewer.addRow(dto);
+                }
+                this.setButtonState(0);
+            }
+        });
+    }
+
+    cwButton(String title, Logic logic, MediaPlayer player, csvViewer csvViewer, int x, int y, boolean bool) {
+        if (!bool) {
+            setText(title);
+            setSize(x, y);
+            buttonState = 2;
+            addActionListener(a -> {
+                int state = this.getButtonState();
+                if (state == 0 || state == 2) {
+                    DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), title);
+                    this.setBorderPainted(false);
+                    this.setDto(dto);
+                    this.setForeground(Color.red);
+                    this.setButtonState(1);
+                }
+                if (state == 1) {
+                    this.setBorderPainted(true);
+                    DataObject dto = this.getDto();
+                    if (dto != null) {
+                        dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
+                        logic.csvWriter(directoryPath, dto);
+                        this.setForeground(Color.black);
+                        csvViewer.addRow(dto);
+                    }
+                    this.setButtonState(0);
+                }
+            });
+        }
+    }
+
+    private int getButtonState() {
+        return this.buttonState;
+    }
+
+    private void setButtonState(int buttonState) {
+        this.buttonState = buttonState;
+    }
+
+    private void setDto(DataObject dto) {
+        this.dto = dto;
+    }
+
+    private DataObject getDto() {
+        return dto;
+    }
+}
+
 //動画再生パネルクラス
 class MoviePanel extends JFXPanel {
     private final Media media;
@@ -188,12 +269,11 @@ class MoviePanel extends JFXPanel {
         slider = new Slider(0, totalTime, 0);
         slider.setBlockIncrement(10);
 
-        int sliderTime = (int) slider.getValue();
-//        root.getChildren().addAll(mediaView, mc);
+
         mpane.getChildren().add(mediaView);
         root.setCenter(mpane);
         root.setBottom(mc);
-//        root.setAlignment(mc, Pos.BOTTOM_CENTER);
+
 
         int rawTime = (int) media.getDuration().toSeconds();
         int second = rawTime % 60;
@@ -318,97 +398,31 @@ class csvViewer extends JFrame {
 
 class codeWindow extends JFrame {
     private csvViewer csvViewer;
+    private String Ateam;
+    private String Bteam;
 
-    codeWindow(Logic logic, csvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
+    codeWindow(teamDatas td, Logic logic, csvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
         setTitle(title);
         setSize(x, y);
         Container cwContainer = this.getContentPane();
-        button tackleButton = new button("Tackle", 400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        tackleButton.addActionListener(a -> {
-            int state = tackleButton.getButtonState();
-            if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Tackle");
-                tackleButton.setBorderPainted(false);
-                tackleButton.setDto(dto);
-                tackleButton.setForeground(Color.red);
-                tackleButton.setButtonState(1);
-                qualifierWindow qw = new qualifierWindow(dto);
-                qw.setVisible(true);
-            }
-            if (state == 1) {
-                tackleButton.setBorderPainted(true);
-                DataObject dto = tackleButton.getDto();
-                if (dto != null) {
-                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
-                    logic.csvWriter(directoryPath, dto);
-                    tackleButton.setForeground(Color.black);
-                    csvViewer.addRow(dto);
-                }
-                tackleButton.setButtonState(0);
-            }
-        });
-        cwContainer.add(tackleButton);
-        button scrumButton = new button("Scrum", 400, 200);
-        scrumButton.addActionListener(a -> {
-            int state = scrumButton.getButtonState();
-            if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Scrum");
-                scrumButton.setBorderPainted(false);
-                scrumButton.setDto(dto);
-                scrumButton.setForeground(Color.red);
-                scrumButton.setButtonState(1);
-                qualifierWindow qw = new qualifierWindow(dto);
-                qw.setVisible(true);
-            }
-            if (state == 1) {
-                scrumButton.setBorderPainted(true);
-                DataObject dto = scrumButton.getDto();
-                if (dto != null) {
-                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
-                    logic.csvWriter(directoryPath, dto);
-                    scrumButton.setForeground(Color.black);
-                    csvViewer.addRow(dto);
-                }
-                scrumButton.setButtonState(0);
-            }
-        });
-        cwContainer.add(scrumButton);
-        button lineOutButton = new button("Lineout", 400, 200);
-        lineOutButton.addActionListener(a -> {
-            int state = lineOutButton.getButtonState();
-            if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "Lineout");
-                lineOutButton.setBorderPainted(false);
-                lineOutButton.setDto(dto);
-                lineOutButton.setForeground(Color.red);
-                lineOutButton.setButtonState(1);
-                qualifierWindow qw = new qualifierWindow(dto);
-                qw.setVisible(true);
-            }
-            if (state == 1) {
-                lineOutButton.setBorderPainted(true);
-                DataObject dto = lineOutButton.getDto();
-                if (dto != null) {
-                    dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
-                    logic.csvWriter(directoryPath, dto);
-                    lineOutButton.setForeground(Color.black);
-                    csvViewer.addRow(dto);
-                }
-                lineOutButton.setButtonState(0);
-            }
-        });
-        cwContainer.add(lineOutButton);
+        Ateam = td.getAteam();
+        Bteam = td.getBteam();
 
-        button APosButton = new button("A TEAM", 400, 200);
-        button BPosButton = new button("B TEAM", 400, 200);
+//        cwButton tackleButton = new cwButton("Tackle", logic, player, csvViewer, 1000, 200);
+//        cwContainer.add(tackleButton);
+        /**
+         * ポゼッション
+         **/
+        button APosButton = new button(Ateam, 400, 200);
+        button BPosButton = new button(Bteam, 400, 200);
         APosButton.addActionListener(a -> {
             if (BPosButton.getButtonState() == 1) {
                 BPosButton.doClick();
             }
             int state = APosButton.getButtonState();
             if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "A TEAM");
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), Ateam);
                 APosButton.setBorderPainted(false);
                 APosButton.setDto(dto);
                 APosButton.setForeground(Color.red);
@@ -427,15 +441,13 @@ class codeWindow extends JFrame {
             }
         });
         cwContainer.add(APosButton);
-
         BPosButton.addActionListener(a -> {
-
             if (APosButton.getButtonState() == 1) {
                 APosButton.doClick();
             }
             int state = BPosButton.getButtonState();
             if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), "B TEAM");
+                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), Bteam);
                 BPosButton.setBorderPainted(false);
                 BPosButton.setDto(dto);
                 BPosButton.setForeground(Color.red);
@@ -454,12 +466,54 @@ class codeWindow extends JFrame {
             }
         });
         cwContainer.add(BPosButton);
-        setLayout(new GridLayout(3, 2));
+        /**
+         * キックオフ
+         **/
+        cwButton AKickOffButton = new cwButton(Ateam + "キックオフ", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(AKickOffButton);
+        cwButton BKickOffButton = new cwButton(Bteam + "キックオフ", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(BKickOffButton);
+        /**
+         * スクラム
+         **/
+        cwButton AScrumButton = new cwButton(Ateam + "スクラム", logic, player, csvViewer, 400, 200);
+        cwContainer.add(AScrumButton);
+        cwButton BScrumButton = new cwButton(Bteam + "スクラム", logic, player, csvViewer, 400, 200);
+        cwContainer.add(BScrumButton);
+        /**
+         * ラインアウト
+         **/
+        cwButton ALineOutButton = new cwButton(Ateam + "ラインアウト", logic, player, csvViewer, 400, 200);
+        cwContainer.add(ALineOutButton);
+        cwButton BLineOutButton = new cwButton(Bteam + "ラインアウト", logic, player, csvViewer, 400, 200);
+        cwContainer.add(BLineOutButton);
+        /**
+         * キック
+         **/
+        cwButton AKickButton = new cwButton(Ateam + "キック", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(AKickButton);
+        cwButton BKickButton = new cwButton(Bteam + "キック", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(BKickButton);
+        /**
+         * ペナルティ
+         **/
+        cwButton APenButton = new cwButton(Ateam + "PK", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(APenButton);
+        cwButton BPenButton = new cwButton(Bteam + "PK", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(BPenButton);
+        /**
+         * トライ
+         **/
+        cwButton ATryButton = new cwButton(Ateam + "トライ", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(ATryButton);
+        cwButton BTryButton = new cwButton(Bteam + "トライ", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(BTryButton);
+        setLayout(new GridLayout(8, 2));
     }
 }
 
 class QButton extends JButton {
-    private Container parent;
+    private final Container parent;
 
     QButton(String title, DataObject dto) {
         setText(title);
@@ -474,7 +528,7 @@ class QButton extends JButton {
 }
 
 class qualifierWindow extends JFrame {
-    private DataObject dto;
+    private final DataObject dto;
     private boolean close;
 
     qualifierWindow(DataObject dto) {
@@ -482,11 +536,12 @@ class qualifierWindow extends JFrame {
         this.dto = dto;
         setSize(350, 100);
         setLocation(900, 100);
-        setLayout(new GridLayout(1, 4));
+        setLayout(new GridLayout(1, 5));
         add(new QButton("Won", dto));
         add(new QButton("Stolen", dto));
         add(new QButton("Success", dto));
         add(new QButton("Miss", dto));
+        add(new QButton("Again", dto));
         toFront();
     }
 }
