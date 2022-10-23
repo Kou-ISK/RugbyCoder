@@ -34,7 +34,7 @@ class MakeFrames {
         Logic logic = new Logic();
         String fileName;
 //      Creating Media Player Window
-        window videoWindow = new window("Rugby Coder", 700, 450);
+        window videoWindow = new window("Rugby Coder");
         //Input Video File Path
         MoviePanel mp = new MoviePanel(filePath);
         logic.setMediaName(directoryPath, mediaName);
@@ -92,15 +92,14 @@ class MakeFrames {
 
         //読み込み完了後なら動画サイズを取得できる
         int videoW = media.getWidth();
-        int videoH = media.getHeight();
+        int videoH = media.getHeight() + 50;
 
         //MoviePanelのサイズを動画に合わせてJFrameに追加
         mp.setPreferredSize(new Dimension(videoW, videoH));
         videoWindow.add(mp);
 
-
         //JFrame側のパネルサイズを動画に合わせる
-        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW, videoH + 100));
+        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW, videoH));
 
         //JFrameサイズをパネル全体が見えるサイズに自動調整
         videoWindow.pack();
@@ -131,6 +130,11 @@ class window extends JFrame {
     window(String title, int x, int y) {
         setTitle(title);
         setSize(x, y);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    window(String title) {
+        setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }
@@ -253,27 +257,25 @@ class MoviePanel extends JFXPanel {
     private final Slider slider;
 
     MoviePanel(String filePath) {
-
-        //JavaFXルートパネル
-        BorderPane root = new BorderPane();
-        Pane mpane = new Pane();
         // 動画ファイルのパスを取得
         File f = new File(filePath);
-
         // 動画再生クラスをインスタンス化
         media = new Media(f.toURI().toString());
         player = new MediaPlayer(media);
         MediaView mediaView = new MediaView(player);
+
+        //JavaFXルートパネル
+        BorderPane root = new BorderPane();
+        Pane mpane = new Pane();
+
+        // コントローラーを呼び出し
         mediaController mc = new mediaController(player);
         int totalTime = (int) player.getTotalDuration().toSeconds();
         slider = new Slider(0, totalTime, 0);
         slider.setBlockIncrement(10);
-
-
         mpane.getChildren().add(mediaView);
         root.setCenter(mpane);
         root.setBottom(mc);
-
 
         int rawTime = (int) media.getDuration().toSeconds();
         int second = rawTime % 60;
@@ -508,6 +510,12 @@ class codeWindow extends JFrame {
         cwContainer.add(ATryButton);
         cwButton BTryButton = new cwButton(Bteam + "トライ", logic, player, csvViewer, 400, 200, false);
         cwContainer.add(BTryButton);
+
+        /**
+         * タックル
+         */
+        cwButton ATackleButton = new cwButton(Ateam + "タックル", logic, player, csvViewer, 400, 200, false);
+        cwContainer.add(ATackleButton);
         setLayout(new GridLayout(8, 2));
     }
 }
