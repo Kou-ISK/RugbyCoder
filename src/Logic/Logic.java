@@ -6,6 +6,9 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,7 +22,8 @@ public class Logic {
 
     //    CSV形式で書き出し
     public void csvWriter(String directoryPath, DataObject dataObject) {
-        String timeCode = dataObject.getTimeCode();
+        String startTimeCode = dataObject.getStartTimeCode();
+        String endTimeCode = dataObject.getEndTimeCode();
         String action = dataObject.getActionName();
         String qualifier = dataObject.getActionQualifier();
         FileWriter fw;
@@ -34,7 +38,9 @@ public class Logic {
             fw = new FileWriter(file, true);
             // PrintWriterクラスのオブジェクトを生成
             PrintWriter pw = new PrintWriter(new BufferedWriter(fw));
-            pw.print(timeCode);
+            pw.print(startTimeCode);
+            pw.print(",");
+            pw.print(endTimeCode);
             pw.print(",");
             pw.print(action);
             pw.print(",");
@@ -105,6 +111,15 @@ public class Logic {
         int min = (int) Math.floor(dur.toMinutes());
         int sec = (int) (Math.ceil(dur.toSeconds() % 60));
         return String.format("%1$d:%2$02d", min, sec);
+    }
+
+    public void checkFileData(String p) {
+        Path path = Paths.get(p);
+        if (Files.exists(path)) {
+            System.out.println("ファイルまたはディレクトリは存在します");
+        } else {
+            
+        }
     }
 
 
