@@ -1,5 +1,6 @@
 package Frame;
 
+import com.sun.java.accessibility.util.AWTEventMonitor;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -14,11 +15,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.media.MediaPlayer;
 
+import static Frame.MakeFrames.kl;
+
 class mediaController extends HBox {
     // introducing Sliders
     private Slider slider = new Slider(); // Slider for time
 
-    private Button PlayButton = new Button("||"); // For pausing the mp
+    private static Button PlayButton = new Button("||"); // For pausing the mp
     private Label volume = new Label("Volume: ");
     private MediaPlayer player;
 
@@ -30,7 +33,7 @@ class mediaController extends HBox {
         setPadding(new Insets(5, 10, 5, 10));
         HBox.setHgrow(slider, Priority.ALWAYS);
         PlayButton.setPrefWidth(30);
-
+        AWTEventMonitor.addKeyListener(kl);
         // Adding the components to the bottom
 
         getChildren().add(PlayButton); // Playbutton

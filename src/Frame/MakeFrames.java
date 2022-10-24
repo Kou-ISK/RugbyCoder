@@ -11,21 +11,26 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.util.Duration;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.regex.Pattern;
 
 import static Frame.MakeFrames.directoryPath;
+import static Frame.MakeFrames.kl;
 
 class MakeFrames {
     private String filePath;
     private String mediaName;
     static String directoryPath;
+    static KeyListener kl;
 
     void makeFrames(String directoryPath, String filePath, String mediaName, teamDatas td) throws Exception {
         this.filePath = filePath;
@@ -39,7 +44,7 @@ class MakeFrames {
         MoviePanel mp = new MoviePanel(filePath);
         logic.setMediaName(directoryPath, mediaName);
         csvViewer csvViewer = new csvViewer(directoryPath, mediaName);
-
+        videoWindow.setFocusable(true);
         fileName = csvViewer.getFileName();
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
@@ -103,6 +108,55 @@ class MakeFrames {
 
         //JFrameサイズをパネル全体が見えるサイズに自動調整
         videoWindow.pack();
+        kl = new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_RIGHT:
+                        //右キー
+                        player.setRate(0.5);
+                        break;
+                    case KeyEvent.VK_SPACE:
+                        //スペースキー
+                        if (player.getStatus() == MediaPlayer.Status.PLAYING) {
+                            player.pause();
+                        } else {
+                            player.setRate(1.0);
+                            player.play();
+                        }
+                        break;
+                    case KeyEvent.VK_SHIFT:
+                        player.setRate(2.0);
+                        break;
+                    case KeyEvent.VK_ENTER:
+                        player.setRate(6.0);
+                        break;
+                    case KeyEvent.VK_LEFT:
+                        Double d = player.getCurrentTime().toSeconds() - 5;
+                        player.seek(Duration.seconds(d));
+                        break;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_RIGHT:
+                        //右キー
+                    case KeyEvent.VK_SPACE:
+                    case KeyEvent.VK_ENTER:
+                    case KeyEvent.VK_SHIFT:
+                        player.setRate(1.0);
+                        break;
+                }
+            }
+        };
+        videoWindow.addKeyListener(kl);
 
         //中心に表示
         videoWindow.setLocationRelativeTo(null);
@@ -115,6 +169,7 @@ class MakeFrames {
 
         videoWindow.setLayout(new FlowLayout());
         videoWindow.setVisible(true);
+        videoWindow.setAutoRequestFocus(true);
         cWindow.setVisible(true);
         videoWindow.setLocation(0, 0);
         cWindow.setLocation(900, 0);
@@ -177,6 +232,7 @@ class cwButton extends JButton {
     cwButton(String title, Logic logic, MediaPlayer player, csvViewer csvViewer, int x, int y) {
         setText(title);
         setSize(x, y);
+        addKeyListener(kl);
         buttonState = 2;
         addActionListener(a -> {
             int state = this.getButtonState();
@@ -204,6 +260,7 @@ class cwButton extends JButton {
     }
 
     cwButton(String title, Logic logic, MediaPlayer player, csvViewer csvViewer, int x, int y, boolean bool) {
+        setFocusable(false);
         if (!bool) {
             setText(title);
             setSize(x, y);
@@ -255,6 +312,7 @@ class MoviePanel extends JFXPanel {
     private final MediaPlayer player;
     private int sliderTime;
     private final Slider slider;
+    private static mediaController mc;
 
     MoviePanel(String filePath) {
         // 動画ファイルのパスを取得
@@ -269,7 +327,7 @@ class MoviePanel extends JFXPanel {
         Pane mpane = new Pane();
 
         // コントローラーを呼び出し
-        mediaController mc = new mediaController(player);
+        mc = new mediaController(player);
         int totalTime = (int) player.getTotalDuration().toSeconds();
         slider = new Slider(0, totalTime, 0);
         slider.setBlockIncrement(10);
@@ -408,6 +466,7 @@ class codeWindow extends JFrame {
         setSize(x, y);
         Container cwContainer = this.getContentPane();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        addKeyListener(kl);
         Ateam = td.getAteam();
         Bteam = td.getBteam();
 

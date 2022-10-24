@@ -6,6 +6,9 @@ import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -108,6 +111,15 @@ public class Logic {
         int min = (int) Math.floor(dur.toMinutes());
         int sec = (int) (Math.ceil(dur.toSeconds() % 60));
         return String.format("%1$d:%2$02d", min, sec);
+    }
+
+    public void checkFileData(String p) {
+        Path path = Paths.get(p);
+        if (Files.exists(path)) {
+            System.out.println("ファイルまたはディレクトリは存在します");
+        } else {
+            
+        }
     }
 
 
