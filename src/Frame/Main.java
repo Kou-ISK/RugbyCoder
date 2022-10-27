@@ -2,10 +2,13 @@ package Frame;
 
 import DataObject.teamDatas;
 import Logic.Logic;
+import com.google.gson.Gson;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 
 public class Main {
     private static String path;
@@ -28,6 +31,22 @@ public class Main {
             } else {
                 mediaName = file.getName();
             }
+            File rugbyCoderPkg = new File(directoryPath + mediaName);
+            // 新規ディレクトリを作成
+            String jsonPath = directoryPath + mediaName + ".json";
+            if (!rugbyCoderPkg.exists()) {
+                rugbyCoderPkg.mkdir();
+                System.out.println(directoryPath + mediaName);
+            } else {
+                File json = new File(jsonPath);
+                if (json.exists()) {
+                    // TODO jsonを読み込む。チーム名を代入し、makeFramesを実行
+                    Gson gson = new Gson();
+                    // JSONから配列への変換
+                    String[] teams = gson.fromJson(String.valueOf(json), String[].class);
+                }
+
+            }
             mv.mediaNameField.setText(mediaName);
         });
         mv.button.addActionListener(e -> {
@@ -41,6 +60,15 @@ public class Main {
             logic.setMediaName(directoryPath, mv.mediaNameField.getText());
             MakeFrames mf = new MakeFrames();
             try {
+                // jsonファイル生成
+                String jsonPath = directoryPath + mediaName + "/" + mediaName + ".json";
+                try (PrintWriter out = new PrintWriter(new FileWriter(jsonPath))) {
+                    Gson gson = new Gson();
+                    String jsonString = gson.toJson(td);
+                    out.write(jsonString);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 mf.makeFrames(directoryPath, path, mediaName, td);
                 mv.setVisible(false);
             } catch (Exception ex) {
