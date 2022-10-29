@@ -3,12 +3,14 @@ package Frame;
 import DataObject.teamDatas;
 import Logic.Logic;
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Main {
     private static String path;
@@ -16,12 +18,12 @@ public class Main {
     private static String directoryPath;
 
     public static void main(String[] args) throws Exception {
-//        TODO パッケージにまとめる
+//        TODO パッケージをクリックで実行できるようにしたい
         Logic logic = new Logic();
         mainView mv = new mainView("Main", 500, 500);
         mv.setVisible(true);
         mv.getNameButton.addActionListener(e -> {
-            String path = mv.pathField.getText();
+            path = mv.pathField.getText();
             File file = new File(path);
             directoryPath = file.getParentFile() + "/";
             System.out.println(file.getName().split("."));
@@ -33,24 +35,42 @@ public class Main {
             }
             File rugbyCoderPkg = new File(directoryPath + mediaName);
             // 新規ディレクトリを作成
+            // 新規パッケージ生成する場合
+            System.out.println(file.getParentFile().getName());
             String jsonPath = directoryPath + mediaName + ".json";
-            if (!rugbyCoderPkg.exists()) {
+            System.out.println(mediaName);
+            if (!file.getParentFile().getName().equals(mediaName)) {
                 rugbyCoderPkg.mkdir();
-                System.out.println(directoryPath + mediaName);
-            } else {
-                File json = new File(jsonPath);
-                if (json.exists()) {
-                    // TODO jsonを読み込む。チーム名を代入し、makeFramesを実行
-                    Gson gson = new Gson();
-                    // JSONから配列への変換
-                    String[] teams = gson.fromJson(String.valueOf(json), String[].class);
+                try {
+                    Files.move(Path.of(file.getPath()), Path.of(directoryPath + mediaName + "/" + mediaName + ".mp4"));
+                    path = directoryPath + mediaName + "/" + mediaName + ".mp4";
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
-
+            } else {
+                path = directoryPath + "/" + mediaName + ".mp4";
+                System.out.println("入ったよ。ここがダメ");
+                File jsonFile = new File(jsonPath);
+                if (jsonFile.exists()) {
+                    // JSONファイルからの読み込み
+                    try (JsonReader reader =
+                                 new JsonReader(new BufferedReader(new FileReader(jsonPath)))) {
+                        // JSONからUserオブジェクトへの変換
+                        Gson gson = new Gson();
+                        teamDatas td = gson.fromJson(reader, teamDatas.class);
+                        MakeFrames mf = new MakeFrames();
+                        mf.makeFrames(directoryPath, path, mediaName, td);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    mv.setVisible(false);
+                }
             }
             mv.mediaNameField.setText(mediaName);
         });
         mv.button.addActionListener(e -> {
-            System.out.println(mv.pathField.getText());
             path = mv.pathField.getText();
             mediaName = mv.mediaNameField.getText();
             String Ateam = mv.AteamField.getText();
@@ -62,10 +82,10 @@ public class Main {
             try {
                 // jsonファイル生成
                 String jsonPath = directoryPath + mediaName + "/" + mediaName + ".json";
-                try (PrintWriter out = new PrintWriter(new FileWriter(jsonPath))) {
+                try (JsonWriter writer =
+                             new JsonWriter(new BufferedWriter(new FileWriter(jsonPath)))) {
                     Gson gson = new Gson();
-                    String jsonString = gson.toJson(td);
-                    out.write(jsonString);
+                    gson.toJson(td, teamDatas.class, writer);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -83,12 +103,12 @@ public class Main {
 
         private String filePath;
         private String mediaName;
-        Button button;
-        Button getNameButton;
-        JTextField pathField;
-        JTextField mediaNameField;
-        JTextField AteamField;
-        JTextField BteamField;
+        private Button button;
+        private Button getNameButton;
+        private JTextField pathField;
+        private JTextField mediaNameField;
+        private JTextField AteamField;
+        private JTextField BteamField;
         private final JScrollPane jScrollPane = new JScrollPane();
 
         mainView(String title, int x, int y) {
