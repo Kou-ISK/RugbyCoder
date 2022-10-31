@@ -59,7 +59,7 @@ public class Main {
                         Gson gson = new Gson();
                         teamDatas td = gson.fromJson(reader, teamDatas.class);
                         MakeFrames mf = new MakeFrames();
-                        mf.makeFrames(directoryPath + mediaName + "/", path, mediaName, td);
+                        mf.makeFrames(directoryPath, path, mediaName, td);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     } catch (Exception ex) {

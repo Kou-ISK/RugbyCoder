@@ -44,7 +44,7 @@ class MakeFrames {
         MoviePanel mp = new MoviePanel(filePath);
         logic.setMediaName(directoryPath, mediaName);
         csvViewer csvViewer = new csvViewer(directoryPath, mediaName);
-        videoWindow.setFocusable(true);
+
         fileName = csvViewer.getFileName();
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
@@ -156,24 +156,19 @@ class MakeFrames {
                 }
             }
         };
-        videoWindow.addKeyListener(kl);
+        cWindow.addKeyListener(kl);
+        cWindow.setFocusable(true);
+        cWindow.setAutoRequestFocus(true);
+        cWindow.setFocusableWindowState(true);
+        cWindow.requestFocus();
 
         //中心に表示
         videoWindow.setLocationRelativeTo(null);
-
-        button fastForward = new button("Fast Forward", 1000, 400);
-        fastForward.addActionListener(a -> {
-            player.setRate(8.0);
-        });
-        videoWindow.add(fastForward);
-
         videoWindow.setLayout(new FlowLayout());
         videoWindow.setVisible(true);
-        videoWindow.setAutoRequestFocus(true);
         cWindow.setVisible(true);
         videoWindow.setLocation(0, 0);
         cWindow.setLocation(900, 0);
-
 
         player.play();
         System.out.println("Current: " + player.getCurrentTime());
@@ -205,6 +200,7 @@ class button extends JButton {
         setText(title);
         setSize(x, y);
         buttonState = 2;
+        setFocusable(false);
     }
 
     int getButtonState() {
@@ -232,6 +228,8 @@ class cwButton extends JButton {
     cwButton(String title, Logic logic, MediaPlayer player, csvViewer csvViewer, int x, int y) {
         setText(title);
         setSize(x, y);
+        setFocusable(false);
+        setRequestFocusEnabled(false);
         addKeyListener(kl);
         buttonState = 2;
         addActionListener(a -> {
@@ -265,6 +263,7 @@ class cwButton extends JButton {
             setText(title);
             setSize(x, y);
             buttonState = 2;
+            setRequestFocusEnabled(false);
             addActionListener(a -> {
                 int state = this.getButtonState();
                 if (state == 0 || state == 2) {
@@ -320,9 +319,9 @@ class MoviePanel extends JFXPanel {
         // 動画再生クラスをインスタンス化
         media = new Media(f.toURI().toString());
         player = new MediaPlayer(media);
+
         MediaView mediaView = new MediaView(player);
-        mediaView.fitHeightProperty();
-        mediaView.fitWidthProperty();
+
 
         //JavaFXルートパネル
         BorderPane root = new BorderPane();
@@ -330,9 +329,11 @@ class MoviePanel extends JFXPanel {
 
         // コントローラーを呼び出し
         mc = new mediaController(player);
+        mc.setFocusTraversable(false);
         int totalTime = (int) player.getTotalDuration().toSeconds();
         slider = new Slider(0, totalTime, 0);
         slider.setBlockIncrement(10);
+
         mpane.getChildren().add(mediaView);
         root.setCenter(mpane);
         root.setBottom(mc);
@@ -349,7 +350,6 @@ class MoviePanel extends JFXPanel {
         //JavaFXScene
         Scene scene = new Scene(root);
         //JFXPanelにSceneをセット
-
         setScene(scene);
 
     }
@@ -468,12 +468,10 @@ class codeWindow extends JFrame {
         setSize(x, y);
         Container cwContainer = this.getContentPane();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        addKeyListener(kl);
+
         Ateam = td.getAteam();
         Bteam = td.getBteam();
 
-//        cwButton tackleButton = new cwButton("Tackle", logic, player, csvViewer, 1000, 200);
-//        cwContainer.add(tackleButton);
         /**
          * ポゼッション
          **/

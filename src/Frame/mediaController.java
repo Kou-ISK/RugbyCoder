@@ -29,10 +29,12 @@ class mediaController extends HBox {
         // Default constructor taking
         // the MediaPlayer object
         this.player = player;
+
         setAlignment(Pos.CENTER); // setting the HBox to center
         setPadding(new Insets(5, 10, 5, 10));
         HBox.setHgrow(slider, Priority.ALWAYS);
         PlayButton.setPrefWidth(30);
+
         AWTEventMonitor.addKeyListener(kl);
         // Adding the components to the bottom
 
