@@ -321,6 +321,8 @@ class MoviePanel extends JFXPanel {
         media = new Media(f.toURI().toString());
         player = new MediaPlayer(media);
         MediaView mediaView = new MediaView(player);
+        mediaView.fitHeightProperty();
+        mediaView.fitWidthProperty();
 
         //JavaFXルートパネル
         BorderPane root = new BorderPane();

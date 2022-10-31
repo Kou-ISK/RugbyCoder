@@ -59,7 +59,7 @@ public class Main {
                         Gson gson = new Gson();
                         teamDatas td = gson.fromJson(reader, teamDatas.class);
                         MakeFrames mf = new MakeFrames();
-                        mf.makeFrames(directoryPath, path, mediaName, td);
+                        mf.makeFrames(directoryPath + mediaName + "/", path, mediaName, td);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     } catch (Exception ex) {
@@ -82,6 +82,8 @@ public class Main {
             try {
                 // jsonファイル生成
                 String jsonPath = directoryPath + mediaName + "/" + mediaName + ".json";
+                path = directoryPath + mediaName + "/" + mediaName + ".mp4";
+                directoryPath = directoryPath + mediaName + "/";
                 try (JsonWriter writer =
                              new JsonWriter(new BufferedWriter(new FileWriter(jsonPath)))) {
                     Gson gson = new Gson();
