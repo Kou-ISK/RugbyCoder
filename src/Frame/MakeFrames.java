@@ -60,7 +60,7 @@ class MakeFrames {
             }
         });
 
-        codeWindow cWindow = new codeWindow(td, logic, csvViewer, "Code Window", player, 500, 800);
+        codeWindow cWindow = new codeWindow(td, logic, csvViewer, "Code Window", player, 200, 300);
 //        保存して終了
         cWindow.addWindowListener(new WindowAdapter() {
             @Override

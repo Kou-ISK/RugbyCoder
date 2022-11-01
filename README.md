@@ -8,9 +8,9 @@ Input File Path
 
 ### 映像、CSVの管理ディレクトリ作成
 
-- /hoge/media/hoge.mp4
-- /hoge/data/hoge.csv
-- /hoge/data/assets.json
+- /hoge/hoge.mp4
+- /hoge/hoge.csv
+- /hoge/hoge.json
 
 ### 映像サイズを画面サイズに合わせる
 

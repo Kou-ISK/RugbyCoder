@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 //        TODO パッケージをクリックで実行できるようにしたい
         Logic logic = new Logic();
-        mainView mv = new mainView("Main", 500, 500);
+        mainView mv = new mainView("Open File", 350, 300);
         mv.setVisible(true);
         mv.getNameButton.addActionListener(e -> {
             path = mv.pathField.getText();
@@ -49,7 +49,6 @@ public class Main {
                 }
             } else {
                 path = directoryPath + "/" + mediaName + ".mp4";
-                System.out.println("入ったよ。ここがダメ");
                 File jsonFile = new File(jsonPath);
                 if (jsonFile.exists()) {
                     // JSONファイルからの読み込み
@@ -116,20 +115,22 @@ public class Main {
         mainView(String title, int x, int y) {
             setTitle(title);
             setSize(x, y);
+            setLocation(600, 200);
             button = new Button("Confirm");
-            button.setBackground(Color.blue);
+            button.setBackground(Color.darkGray);
             getNameButton = new Button("Get Media Name");
-            getNameButton.setPreferredSize(new Dimension(400, 100));
+            getNameButton.setPreferredSize(new Dimension(300, 50));
             getNameButton.setBackground(Color.lightGray);
-            button.setPreferredSize(new Dimension(400, 100));
+            button.setPreferredSize(new Dimension(300, 50));
             pathField = new JTextField("Path Field");
-            pathField.setPreferredSize(new Dimension(400, 50));
+            pathField.setPreferredSize(new Dimension(300, 30));
+            pathField.setLocation(0, 30);
             mediaNameField = new JTextField("Media Name");
-            mediaNameField.setPreferredSize(new Dimension(400, 50));
+            mediaNameField.setPreferredSize(new Dimension(300, 30));
             AteamField = new JTextField("A TEAM");
-            AteamField.setPreferredSize(new Dimension(200, 30));
+            AteamField.setPreferredSize(new Dimension(100, 30));
             BteamField = new JTextField("B TEAM");
-            BteamField.setPreferredSize(new Dimension(200, 30));
+            BteamField.setPreferredSize(new Dimension(100, 30));
             setLayout(new FlowLayout(FlowLayout.CENTER));
             add(pathField);
             add(getNameButton);
