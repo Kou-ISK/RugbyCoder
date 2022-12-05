@@ -9,7 +9,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -22,7 +21,7 @@ class mediaController extends HBox {
     private Slider slider = new Slider(); // Slider for time
 
     private static Button PlayButton = new Button("||"); // For pausing the mp
-    private Label volume = new Label("Volume: ");
+    private static Slider volumeSlider = new Slider(0, 100, 100);
     private MediaPlayer player;
 
     mediaController(MediaPlayer player) {
@@ -39,6 +38,7 @@ class mediaController extends HBox {
         // Adding the components to the bottom
 
         getChildren().add(PlayButton); // Playbutton
+        getChildren().add(volumeSlider);
         getChildren().add(slider); // time slider
         // Adding Functionality
         // to play the media mp
@@ -51,6 +51,14 @@ class mediaController extends HBox {
                 if (slider.isPressed()) { // It would set the time
                     // as specified by user by pressing
                     player.seek(player.getMedia().getDuration().multiply(slider.getValue() / 100));
+                }
+            }
+        });
+
+        volumeSlider.valueProperty().addListener(new InvalidationListener() {
+            public void invalidated(Observable ov) {
+                if (volumeSlider.isPressed()) {
+                    player.setVolume(volumeSlider.getValue() / 100.0);
                 }
             }
         });
