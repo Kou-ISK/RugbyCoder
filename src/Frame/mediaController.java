@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.MediaPlayer;
 
 import static Frame.MakeFrames.kl;
@@ -54,7 +55,7 @@ class mediaController extends HBox {
                 }
             }
         });
-
+        StackPane trackPane = (StackPane) slider.lookup(".track");
         volumeSlider.valueProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
                 if (volumeSlider.isPressed()) {
@@ -62,7 +63,6 @@ class mediaController extends HBox {
                 }
             }
         });
-
         // Providing functionality to time slider
         player.currentTimeProperty().addListener(new InvalidationListener() {
             public void invalidated(Observable ov) {
