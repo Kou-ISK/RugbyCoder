@@ -7,6 +7,8 @@ import javafx.scene.media.MediaPlayer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static Frame.MakeFrames.directoryPath;
 
@@ -14,6 +16,7 @@ class codeWindow extends JFrame {
     private csvViewer csvViewer;
     private String Ateam;
     private String Bteam;
+    private ArrayList<String> buttonList = new ArrayList<>(Arrays.asList("キックオフ", "スクラム", "ラインアウト", "キック", "PK", "トライ", "タックル"));
 
     codeWindow(teamDatas td, Logic logic, csvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
         setTitle(title);
@@ -79,54 +82,17 @@ class codeWindow extends JFrame {
             }
         });
         cwContainer.add(BPosButton);
-        /**
-         * キックオフ
-         **/
-        cwButton AKickOffButton = new cwButton(Ateam + "キックオフ", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(AKickOffButton);
-        cwButton BKickOffButton = new cwButton(Bteam + "キックオフ", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(BKickOffButton);
-        /**
-         * スクラム
-         **/
-        cwButton AScrumButton = new cwButton(Ateam + "スクラム", logic, player, csvViewer, 400, 200);
-        cwContainer.add(AScrumButton);
-        cwButton BScrumButton = new cwButton(Bteam + "スクラム", logic, player, csvViewer, 400, 200);
-        cwContainer.add(BScrumButton);
-        /**
-         * ラインアウト
-         **/
-        cwButton ALineOutButton = new cwButton(Ateam + "ラインアウト", logic, player, csvViewer, 400, 200);
-        cwContainer.add(ALineOutButton);
-        cwButton BLineOutButton = new cwButton(Bteam + "ラインアウト", logic, player, csvViewer, 400, 200);
-        cwContainer.add(BLineOutButton);
-        /**
-         * キック
-         **/
-        cwButton AKickButton = new cwButton(Ateam + "キック", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(AKickButton);
-        cwButton BKickButton = new cwButton(Bteam + "キック", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(BKickButton);
-        /**
-         * ペナルティ
-         **/
-        cwButton APenButton = new cwButton(Ateam + "PK", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(APenButton);
-        cwButton BPenButton = new cwButton(Bteam + "PK", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(BPenButton);
-        /**
-         * トライ
-         **/
-        cwButton ATryButton = new cwButton(Ateam + "トライ", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(ATryButton);
-        cwButton BTryButton = new cwButton(Bteam + "トライ", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(BTryButton);
 
         /**
-         * タックル
+         * 各種アクションボタンを追加
          */
-        cwButton ATackleButton = new cwButton(Ateam + "タックル", logic, player, csvViewer, 400, 200, false);
-        cwContainer.add(ATackleButton);
+        buttonList.forEach(buttonText -> {
+            cwButton aButton = new cwButton(Ateam + buttonText, logic, player, csvViewer, 400, 200);
+            cwContainer.add(aButton);
+            cwButton bButton = new cwButton(Bteam + buttonText, logic, player, csvViewer, 400, 200);
+            cwContainer.add(bButton);
+        });
+
         setLayout(new GridLayout(8, 2));
     }
 }
