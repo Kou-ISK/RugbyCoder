@@ -91,7 +91,8 @@ class MakeFrames {
         videoWindow.add(mp);
 
         //JFrame側のパネルサイズを動画に合わせる
-        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW, videoH));
+//        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW, videoH));
+        videoWindow.getContentPane().setSize(videoWindow.getSize());
 
         //JFrameサイズをパネル全体が見えるサイズに自動調整
         videoWindow.pack();
