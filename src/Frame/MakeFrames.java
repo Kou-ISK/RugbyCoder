@@ -2,7 +2,6 @@ package Frame;
 
 import DataObject.teamDatas;
 import Logic.Logic;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
@@ -14,28 +13,26 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 class MakeFrames {
-    private String filePath;
-    private String mediaName;
+
     static String directoryPath;
     static KeyListener kl;
 
-    void makeFrames(String directoryPath, String filePath, String mediaName, teamDatas td) throws Exception {
-        this.filePath = filePath;
-        this.mediaName = mediaName;
+    void makeFrames(String directoryPath, String filePath, String filePath2, String mediaName, teamDatas td) throws Exception {
         MakeFrames.directoryPath = directoryPath;
         Logic logic = new Logic();
         String fileName;
 //      Creating Media Player Window
         window videoWindow = new window("Rugby Coder");
         //Input Video File Path
-        MoviePanel mp = new MoviePanel(filePath);
+        MoviePanel mp = new MoviePanel(filePath, filePath2);
         logic.setMediaName(directoryPath, mediaName);
         csvViewer csvViewer = new csvViewer(directoryPath, mediaName);
 
         fileName = csvViewer.getFileName();
         //JavaFX動画インスタンスとプレイヤーを取得
-        Media media = mp.getMedia();
+
         MediaPlayer player = mp.getPlayer();
+        MediaPlayer player2 = mp.getPlayer();
 
         JTable table = csvViewer.getTable();
         table.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -44,6 +41,7 @@ class MakeFrames {
                 int row = table.rowAtPoint(evt.getPoint());
                 String timeCode = (String) table.getValueAt(row, 0);
                 player.seek(logic.getDataFromCsv(timeCode));
+                player2.seek(logic.getDataFromCsv(timeCode));
             }
         });
 
@@ -82,17 +80,7 @@ class MakeFrames {
             if (i > 20) throw new Exception("動画の読み込みに時間がかかりすぎたため中断しました。");
         }
 
-        //読み込み完了後なら動画サイズを取得できる
-        int videoW = (int) (media.getWidth() * 0.9);
-        int videoH = (int) ((media.getHeight() + 50) * 0.9);
-
-        //MoviePanelのサイズを動画に合わせてJFrameに追加
-        mp.setPreferredSize(new Dimension(videoW, videoH));
         videoWindow.add(mp);
-
-        //JFrame側のパネルサイズを動画に合わせる
-//        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW, videoH));
-        videoWindow.getContentPane().setSize(videoWindow.getSize());
 
         //JFrameサイズをパネル全体が見えるサイズに自動調整
         videoWindow.pack();
@@ -108,25 +96,32 @@ class MakeFrames {
                     case KeyEvent.VK_RIGHT:
                         //右キー
                         player.setRate(0.5);
+                        player2.setRate(0.5);
                         break;
                     case KeyEvent.VK_SPACE:
                         //スペースキー
                         if (player.getStatus() == MediaPlayer.Status.PLAYING) {
                             player.pause();
+                            player2.pause();
                         } else {
                             player.setRate(1.0);
+                            player2.setRate(1.0);
                             player.play();
+                            player2.play();
                         }
                         break;
                     case KeyEvent.VK_SHIFT:
                         player.setRate(2.0);
+                        player2.setRate(2.0);
                         break;
                     case KeyEvent.VK_ENTER:
                         player.setRate(6.0);
+                        player2.setRate(6.0);
                         break;
                     case KeyEvent.VK_LEFT:
                         Double d = player.getCurrentTime().toSeconds() - 5;
                         player.seek(Duration.seconds(d));
+                        player2.seek(Duration.seconds(d));
                         break;
                 }
             }
@@ -140,6 +135,7 @@ class MakeFrames {
                     case KeyEvent.VK_ENTER:
                     case KeyEvent.VK_SHIFT:
                         player.setRate(1.0);
+                        player2.setRate(1.0);
                         break;
                 }
             }
@@ -159,6 +155,8 @@ class MakeFrames {
         cWindow.setLocation(900, 0);
 
         player.play();
+        player2.play();
+
         System.out.println("Current: " + player.getCurrentTime());
         System.out.println(player.getStopTime());
     }

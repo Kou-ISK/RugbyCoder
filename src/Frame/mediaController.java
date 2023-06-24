@@ -24,11 +24,13 @@ class mediaController extends HBox {
     private static Button PlayButton = new Button("||"); // For pausing the mp
     private static Slider volumeSlider = new Slider(0, 100, 100);
     private MediaPlayer player;
+    private MediaPlayer player2;
 
-    mediaController(MediaPlayer player) {
+    mediaController(MediaPlayer player, MediaPlayer player2) {
         // Default constructor taking
         // the MediaPlayer object
         this.player = player;
+        this.player2 = player2;
 
         setAlignment(Pos.CENTER); // setting the HBox to center
         setPadding(new Insets(5, 10, 5, 10));
@@ -52,6 +54,7 @@ class mediaController extends HBox {
                 if (slider.isPressed()) { // It would set the time
                     // as specified by user by pressing
                     player.seek(player.getMedia().getDuration().multiply(slider.getValue() / 100));
+                    player2.seek(player2.getMedia().getDuration().multiply(slider.getValue() / 100));
                 }
             }
         });
@@ -60,6 +63,7 @@ class mediaController extends HBox {
             public void invalidated(Observable ov) {
                 if (volumeSlider.isPressed()) {
                     player.setVolume(volumeSlider.getValue() / 100.0);
+                    player2.setVolume(volumeSlider.getValue() / 100.0);
                 }
             }
         });
@@ -75,6 +79,7 @@ class mediaController extends HBox {
         PlayButton.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 MediaPlayer.Status status = player.getStatus(); // To get the status of Player
+                MediaPlayer.Status status2 = player2.getStatus();
                 if (status == status.PLAYING) {
 
                     // If the status is Video playing
@@ -84,16 +89,23 @@ class mediaController extends HBox {
                         player.seek(player.getStartTime()); // Restart the video
                         player.play();
                         player.setRate(1.0);
+                        player2.seek(player2.getStartTime()); // Restart the video
+                        player2.play();
+                        player2.setRate(1.0);
                     } else {
                         // Pausing the player
                         player.pause();
                         player.setRate(1.0);
+                        player2.pause();
+                        player2.setRate(1.0);
                         PlayButton.setText(">");
                     }
                 } // If the video is stopped, halted or paused
                 if (status == MediaPlayer.Status.HALTED || status == MediaPlayer.Status.STOPPED || status == MediaPlayer.Status.PAUSED) {
                     player.play(); // Start the video
                     player.setRate(1.0);
+                    player2.play(); // Start the video
+                    player2.setRate(1.0);
                     PlayButton.setText("||");
                 }
             }

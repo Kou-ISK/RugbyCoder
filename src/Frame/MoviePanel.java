@@ -15,33 +15,44 @@ import java.io.File;
 class MoviePanel extends JFXPanel {
     private final Media media;
     private final MediaPlayer player;
+    private final Media media2;
+    private final MediaPlayer player2;
     private int sliderTime;
     private final Slider slider;
     private static mediaController mc;
 
-    MoviePanel(String filePath) {
+    MoviePanel(String filePath, String filePath2) {
         // 動画ファイルのパスを取得
         File f = new File(filePath);
+        File f2 = new File(filePath2);
         // 動画再生クラスをインスタンス化
         media = new Media(f.toURI().toString());
+        media2 = new Media(f2.toURI().toString());
         player = new MediaPlayer(media);
+        player2 = new MediaPlayer(media2);
 
         MediaView mediaView = new MediaView(player);
+        MediaView mediaView2 = new MediaView(player2);
 
 
         //JavaFXルートパネル
         BorderPane root = new BorderPane();
-        Pane mpane = new Pane();
+        Pane tight = new Pane();
+        Pane wide = new Pane();
 
         // コントローラーを呼び出し
-        mc = new mediaController(player);
+        mc = new mediaController(player, player2);
         mc.setFocusTraversable(false);
         int totalTime = (int) player.getTotalDuration().toSeconds();
         slider = new Slider(0, totalTime, 0);
         slider.setBlockIncrement(10);
-
-        mpane.getChildren().add(mediaView);
-        root.setCenter(mpane);
+        
+        tight.getChildren().add(mediaView);
+        tight.resize(root.getWidth() * 0.25, root.getHeight() * 0.25);
+        wide.getChildren().add(mediaView2);
+        wide.resize(root.getWidth() * 0.25, root.getHeight() * 0.25);
+        root.setLeft(tight);
+        root.setRight(wide);
         root.setBottom(mc);
 
         int rawTime = (int) media.getDuration().toSeconds();
@@ -69,8 +80,16 @@ class MoviePanel extends JFXPanel {
         return media;
     }
 
+    Media getMedia2() {
+        return media2;
+    }
+
     MediaPlayer getPlayer() {
         return player;
+    }
+
+    MediaPlayer getPlayer2() {
+        return player2;
     }
 
     Slider getSlider() {

@@ -14,6 +14,7 @@ import java.nio.file.Path;
 
 public class Main {
     private static String path;
+    private static String path2;
     private static String mediaName;
     private static String directoryPath;
 
@@ -24,7 +25,9 @@ public class Main {
         mv.setVisible(true);
         mv.getNameButton.addActionListener(e -> {
             path = mv.pathField.getText();
+            path2 = mv.pathField2.getText();
             File file = new File(path);
+            File file2 = new File(path2);
             directoryPath = file.getParentFile() + "/";
             System.out.println(file.getName().split("."));
             int point = file.getName().lastIndexOf(".");
@@ -38,17 +41,21 @@ public class Main {
             // 新規パッケージ生成する場合
             System.out.println(file.getParentFile().getName());
             String jsonPath = directoryPath + mediaName + ".json";
+            System.out.println(jsonPath);
             System.out.println(mediaName);
             if (!file.getParentFile().getName().equals(mediaName)) {
                 rugbyCoderPkg.mkdir();
                 try {
                     Files.move(Path.of(file.getPath()), Path.of(directoryPath + mediaName + "/" + mediaName + ".mp4"));
+                    Files.move(Path.of(file2.getPath()), Path.of(directoryPath + mediaName + "/" + mediaName + "_2.mp4"));
                     path = directoryPath + mediaName + "/" + mediaName + ".mp4";
+                    path2 = directoryPath + mediaName + "/" + mediaName + "_2.mp4";
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
             } else {
                 path = directoryPath + "/" + mediaName + ".mp4";
+                path2 = directoryPath + "/" + mediaName + "_2.mp4";
                 File jsonFile = new File(jsonPath);
                 if (jsonFile.exists()) {
                     // JSONファイルからの読み込み
@@ -58,7 +65,7 @@ public class Main {
                         Gson gson = new Gson();
                         teamDatas td = gson.fromJson(reader, teamDatas.class);
                         MakeFrames mf = new MakeFrames();
-                        mf.makeFrames(directoryPath, path, mediaName, td);
+                        mf.makeFrames(directoryPath, path, path2, mediaName, td);
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     } catch (Exception ex) {
@@ -71,17 +78,18 @@ public class Main {
         });
         mv.button.addActionListener(e -> {
             path = mv.pathField.getText();
+            path2 = mv.pathField2.getText();
             mediaName = mv.mediaNameField.getText();
             String Ateam = mv.AteamField.getText();
             String Bteam = mv.BteamField.getText();
             teamDatas td = new teamDatas(Ateam, Bteam);
-            logic.setFilePath(mv.pathField.getText());
-            logic.setMediaName(directoryPath, mv.mediaNameField.getText());
+            logic.setFilePath(path);
             MakeFrames mf = new MakeFrames();
             try {
                 // jsonファイル生成
                 String jsonPath = directoryPath + mediaName + "/" + mediaName + ".json";
                 path = directoryPath + mediaName + "/" + mediaName + ".mp4";
+                path2 = directoryPath + mediaName + "/" + mediaName + "_2.mp4";
                 directoryPath = directoryPath + mediaName + "/";
                 try (JsonWriter writer =
                              new JsonWriter(new BufferedWriter(new FileWriter(jsonPath)))) {
@@ -90,7 +98,7 @@ public class Main {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                mf.makeFrames(directoryPath, path, mediaName, td);
+                mf.makeFrames(directoryPath, path, path2, mediaName, td);
                 mv.setVisible(false);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -101,12 +109,10 @@ public class Main {
     }
 
     static class mainView extends JFrame {
-
-        private String filePath;
-        private String mediaName;
         private Button button;
         private Button getNameButton;
         private JTextField pathField;
+        private JTextField pathField2;
         private JTextField mediaNameField;
         private JTextField AteamField;
         private JTextField BteamField;
@@ -125,6 +131,9 @@ public class Main {
             pathField = new JTextField("Path Field");
             pathField.setPreferredSize(new Dimension(300, 30));
             pathField.setLocation(0, 30);
+            pathField2 = new JTextField("Path Field2");
+            pathField2.setPreferredSize(new Dimension(300, 30));
+            pathField2.setLocation(0, 30);
             mediaNameField = new JTextField("Media Name");
             mediaNameField.setPreferredSize(new Dimension(300, 30));
             AteamField = new JTextField("A TEAM");
@@ -133,16 +142,13 @@ public class Main {
             BteamField.setPreferredSize(new Dimension(100, 30));
             setLayout(new FlowLayout(FlowLayout.CENTER));
             add(pathField);
+            add(pathField2);
             add(getNameButton);
             add(mediaNameField);
             add(AteamField);
             add(BteamField);
             add(button);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        }
-
-        String getFilePath() {
-            return filePath;
         }
 
         String getMediaName() {
