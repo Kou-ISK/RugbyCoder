@@ -13,10 +13,10 @@ import java.util.Arrays;
 import static Frame.MakeFrames.directoryPath;
 
 class codeWindow extends JFrame {
-    private csvViewer csvViewer;
-    private String Ateam;
-    private String Bteam;
-    private ArrayList<String> buttonList = new ArrayList<>(Arrays.asList("キックオフ", "スクラム", "ラインアウト", "キック", "PK", "トライ", "タックル"));
+    private final String Ateam;
+    private final String Bteam;
+    private final ArrayList<String> buttonWithQualifierList = new ArrayList<>(Arrays.asList("キックオフ", "スクラム", "ラインアウト", "トライ"));
+    private final ArrayList<String> buttonWithoutQualifierList = new ArrayList<>(Arrays.asList("タックル", "22m侵入", "WTBボールタッチ", "キック", "PK"));
 
     codeWindow(teamDatas td, Logic logic, csvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
         setTitle(title);
@@ -84,12 +84,22 @@ class codeWindow extends JFrame {
         cwContainer.add(BPosButton);
 
         /**
-         * 各種アクションボタンを追加
+         * 各種アクションボタン(ラベルあり)を追加
          */
-        buttonList.forEach(buttonText -> {
-            cwButton aButton = new cwButton(Ateam + buttonText, logic, player, csvViewer, 400, 200);
+        buttonWithQualifierList.forEach(buttonText -> {
+            cwButton aButton = new cwButton(Ateam + buttonText, logic, player, csvViewer, 400, 200, true);
             cwContainer.add(aButton);
-            cwButton bButton = new cwButton(Bteam + buttonText, logic, player, csvViewer, 400, 200);
+            cwButton bButton = new cwButton(Bteam + buttonText, logic, player, csvViewer, 400, 200, true);
+            cwContainer.add(bButton);
+        });
+
+        /**
+         * 各種アクションボタン(ラベルなし)を追加
+         */
+        buttonWithoutQualifierList.forEach(buttonText -> {
+            cwButton aButton = new cwButton(Ateam + buttonText, logic, player, csvViewer, 400, 200, false);
+            cwContainer.add(aButton);
+            cwButton bButton = new cwButton(Bteam + buttonText, logic, player, csvViewer, 400, 200, false);
             cwContainer.add(bButton);
         });
 
