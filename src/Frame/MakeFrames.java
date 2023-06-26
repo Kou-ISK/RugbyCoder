@@ -47,6 +47,31 @@ class MakeFrames {
             }
         });
 
+        table.addKeyListener(new KeyListener() {
+                                 @Override
+                                 public void keyTyped(KeyEvent e) {
+
+                                 }
+
+                                 @Override
+                                 public void keyPressed(KeyEvent e) {
+                                     switch (e.getKeyCode()) {
+                                         case KeyEvent.VK_BACK_SPACE -> {
+                                             int removeRowNumber = table.getSelectedRow();
+                                             if (removeRowNumber != -1) {
+                                                 csvViewer.removeRow(removeRowNumber);
+                                             }
+                                         }
+                                     }
+                                 }
+
+                                 @Override
+                                 public void keyReleased(KeyEvent e) {
+
+                                 }
+                             }
+        );
+
         codeWindow cWindow = new codeWindow(td, logic, csvViewer, "Code Window", player, 200, 300);
 //        保存して終了
         cWindow.addWindowListener(new WindowAdapter() {

@@ -34,6 +34,10 @@ class csvViewer extends JFrame {
         tableModel.addRow(dataList);
     }
 
+    void removeRow(int rowNumber) {
+        tableModel.removeRow(rowNumber);
+    }
+
     void saveCsvFile() {
         File file = new File(fileName);
         if (!file.canWrite()) {
