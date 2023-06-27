@@ -20,5 +20,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="google.code.gson" level="project" />
+    <orderEntry type="library" exported="" name="googlecode.mp4parser.isoparser" level="project" />
+    <orderEntry type="library" exported="" name="aspectj.aspectjrt" level="project" />
   </component>
 </module>

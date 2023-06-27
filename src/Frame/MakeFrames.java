@@ -8,10 +8,7 @@ import javafx.util.Duration;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 class MakeFrames {
     private String filePath;
@@ -38,12 +35,20 @@ class MakeFrames {
         MediaPlayer player = mp.getPlayer();
 
         JTable table = csvViewer.getTable();
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
+        table.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 int row = table.rowAtPoint(evt.getPoint());
                 String timeCode = (String) table.getValueAt(row, 0);
                 player.seek(logic.getDataFromCsv(timeCode));
+
+                if (javax.swing.SwingUtilities.isRightMouseButton(evt)) {
+                    String startTime = (String) table.getValueAt(row, 0);
+                    String endTime = (String) table.getValueAt(row, 1);
+                    String actionName = (String) table.getValueAt(row, 2);
+                    logic.ExportVideo(filePath, startTime, endTime, actionName);
+                    System.out.println("右クリック");
+                }
             }
         });
 

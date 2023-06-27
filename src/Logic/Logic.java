@@ -1,6 +1,13 @@
 package Logic;
 
 import DataObject.DataObject;
+import com.coremedia.iso.boxes.Container;
+import com.googlecode.mp4parser.authoring.Movie;
+import com.googlecode.mp4parser.authoring.Track;
+import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+import com.googlecode.mp4parser.authoring.tracks.CroppedTrack;
 import javafx.scene.control.Slider;
 import javafx.util.Duration;
 
@@ -13,6 +20,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import static Frame.Main.directoryPath;
 
 public class Logic {
     private String mediaName;
@@ -118,9 +127,45 @@ public class Logic {
         if (Files.exists(path)) {
             System.out.println("ファイルまたはディレクトリは存在します");
         } else {
-            
+
         }
     }
 
+    public boolean ExportVideo(String filePath, String startTime, String endTime, String actionName) {
+        try {
+            // 動画を読み込み
+            Movie originalMovie = MovieCreator.build(filePath);
 
+            // 分割
+            Track track = originalMovie.getTracks().get(0);
+            Movie movie = new Movie();
+
+            Long parsedStartTime = parseToMilli(startTime);
+            Long parsedEndTime = parseToMilli(endTime);
+            movie.addTrack(new AppendTrack(new CroppedTrack(track, parsedStartTime, parsedEndTime)));
+
+            // 出力
+            Container out = new DefaultMp4Builder().build(movie);
+            String outputFilePath = directoryPath + mediaName + "/" + actionName + "_" + startTime + "/output.mp4";
+            FileOutputStream fos = new FileOutputStream(new File(outputFilePath));
+            out.writeContainer(fos.getChannel());
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private Long parseToMilli(String time) {
+        try {
+            System.out.println(time);
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            Date date = sdf.parse(time);
+            System.out.println(date.getTime());
+            return date.getTime();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

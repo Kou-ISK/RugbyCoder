@@ -14,8 +14,8 @@ import java.nio.file.Path;
 
 public class Main {
     private static String path;
-    private static String mediaName;
-    private static String directoryPath;
+    public static String mediaName;
+    public static String directoryPath;
 
     public static void main(String[] args) throws Exception {
 //        TODO パッケージをクリックで実行できるようにしたい
