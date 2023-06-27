@@ -146,7 +146,7 @@ public class Logic {
 
             // 出力
             Container out = new DefaultMp4Builder().build(movie);
-            String outputFilePath = directoryPath + mediaName + "/" + actionName + "_" + startTime + "/output.mp4";
+            String outputFilePath = directoryPath + actionName + "_" + startTime.replace(":", "-") + "_output.mp4";
             FileOutputStream fos = new FileOutputStream(new File(outputFilePath));
             out.writeContainer(fos.getChannel());
             fos.close();
@@ -158,14 +158,14 @@ public class Logic {
     }
 
     private Long parseToMilli(String time) {
+        Long milli;
         try {
-            System.out.println(time);
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-            Date date = sdf.parse(time);
-            System.out.println(date.getTime());
-            return date.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+            Date parsed = sdf.parse(time);
+            milli = Long.valueOf(parsed.getSeconds() * 1000);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+        return milli;
     }
 }
