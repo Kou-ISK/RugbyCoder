@@ -131,6 +131,7 @@ public class Logic {
         }
     }
 
+    // mp4parser参考: https://dev.classmethod.jp/articles/mp4parser/
     public boolean ExportVideo(String filePath, String startTime, String endTime, String actionName) {
         try {
             // 動画を読み込み
@@ -146,8 +147,10 @@ public class Logic {
 
             // 出力
             Container out = new DefaultMp4Builder().build(movie);
-            String outputFilePath = directoryPath + actionName + "_" + startTime.replace(":", "-") + "_output.mp4";
-            FileOutputStream fos = new FileOutputStream(new File(outputFilePath));
+            File exportFolder = new File(directoryPath + "export");
+            if (!exportFolder.exists()) exportFolder.mkdir();
+            String outputFilePath = directoryPath + "export/" + actionName + "_" + startTime.replace(":", "-") + "_output.mp4";
+            FileOutputStream fos = new FileOutputStream(outputFilePath);
             out.writeContainer(fos.getChannel());
             fos.close();
         } catch (Exception e) {
@@ -160,7 +163,7 @@ public class Logic {
     private Long parseToMilli(String time) {
         Long milli;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
             Date parsed = sdf.parse(time);
             milli = Long.valueOf(parsed.getSeconds() * 1000);
         } catch (ParseException e) {
