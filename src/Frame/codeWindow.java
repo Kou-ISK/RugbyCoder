@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static Frame.MakeFrames.directoryPath;
+import static java.awt.Color.blue;
+import static java.awt.Color.red;
 
 class codeWindow extends JFrame {
     private final String Ateam;
@@ -41,7 +43,7 @@ class codeWindow extends JFrame {
                 DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), Ateam);
                 APosButton.setBorderPainted(false);
                 APosButton.setDto(dto);
-                APosButton.setForeground(Color.red);
+                APosButton.setForeground(red);
                 APosButton.setButtonState(1);
             }
             if (state == 1) {
@@ -56,6 +58,8 @@ class codeWindow extends JFrame {
                 APosButton.setButtonState(0);
             }
         });
+        APosButton.setBackground(blue);
+        APosButton.setOpaque(true);
         cwContainer.add(APosButton);
         BPosButton.addActionListener(a -> {
             if (APosButton.getButtonState() == 1) {
@@ -88,6 +92,7 @@ class codeWindow extends JFrame {
          */
         buttonWithQualifierList.forEach(buttonText -> {
             cwButton aButton = new cwButton(Ateam + buttonText, logic, player, csvViewer, 400, 200, true);
+            aButton.setBackground(blue);
             cwContainer.add(aButton);
             cwButton bButton = new cwButton(Bteam + buttonText, logic, player, csvViewer, 400, 200, true);
             cwContainer.add(bButton);
@@ -98,11 +103,12 @@ class codeWindow extends JFrame {
          */
         buttonWithoutQualifierList.forEach(buttonText -> {
             cwButton aButton = new cwButton(Ateam + buttonText, logic, player, csvViewer, 400, 200, false);
+            aButton.setBackground(blue);
             cwContainer.add(aButton);
             cwButton bButton = new cwButton(Bteam + buttonText, logic, player, csvViewer, 400, 200, false);
             cwContainer.add(bButton);
         });
 
-        setLayout(new GridLayout(8, 2));
+        setLayout(new GridLayout(10, 2));
     }
 }

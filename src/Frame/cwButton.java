@@ -19,6 +19,7 @@ class cwButton extends JButton {
         setText(title);
         setSize(x, y);
         setFocusable(false);
+        setOpaque(true);
         setRequestFocusEnabled(false);
         addKeyListener(kl);
         buttonState = 2;
