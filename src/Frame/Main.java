@@ -14,7 +14,7 @@ import java.nio.file.Path;
 
 public class Main {
     private static String path;
-    public static String mediaName;
+    private static String mediaName;
     public static String directoryPath;
 
     public static void main(String[] args) throws Exception {

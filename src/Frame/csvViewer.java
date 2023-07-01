@@ -9,15 +9,17 @@ import java.util.regex.Pattern;
 
 class csvViewer extends JFrame {
     private final String fileName;
-    private final String[] header = {"startTime", "endTime", "Action", "Qualifier"};
-    private final DefaultTableModel tableModel = new DefaultTableModel(null, header);
-    private final JTable table = new JTable(tableModel);
+    private static final String[] header = {"startTime", "endTime", "Action", "Qualifier"};
+    private static final DefaultTableModel tableModel = new DefaultTableModel(null, header);
+    private static final JTable table = new JTable(tableModel);
     private final JScrollPane jScrollPane = new JScrollPane(table);
 
     csvViewer(String directoryPath, String filename) throws IOException {
         super(filename + " - TimeLine");
         fileName = directoryPath + "/" + filename + ".csv";
 
+        MyMenuBar myMenuBar = new MyMenuBar();
+        setJMenuBar(myMenuBar.getMenuBar());
         readIn();
         getContentPane().add(jScrollPane);
         table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
@@ -32,6 +34,17 @@ class csvViewer extends JFrame {
     void addRow(DataObject dto) {
         Object[] dataList = {dto.getStartTimeCode(), dto.getEndTimeCode(), dto.getActionName(), dto.getActionQualifier()};
         tableModel.addRow(dataList);
+    }
+
+    static String[] getRow(int rowNumber) {
+        String startTime = (String) table.getValueAt(rowNumber, 0);
+        String endTime = (String) table.getValueAt(rowNumber, 1);
+        String actionName = (String) table.getValueAt(rowNumber, 2);
+        String[] rowData = new String[3];
+        rowData[0] = startTime;
+        rowData[1] = endTime;
+        rowData[2] = actionName;
+        return rowData;
     }
 
     void removeRow(int rowNumber) {
@@ -67,7 +80,7 @@ class csvViewer extends JFrame {
     }
 
 
-    JTable getTable() {
+    static JTable getTable() {
         return table;
     }
 

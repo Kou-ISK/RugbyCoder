@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 class MakeFrames {
-    private String filePath;
+    static String filePath;
     private String mediaName;
     static String directoryPath;
     static KeyListener kl;
@@ -41,14 +41,6 @@ class MakeFrames {
                 int rowNumber = table.rowAtPoint(evt.getPoint());
                 String timeCode = (String) table.getValueAt(rowNumber, 0);
                 player.seek(logic.getDataFromCsv(timeCode));
-
-                if (javax.swing.SwingUtilities.isRightMouseButton(evt)) {
-                    String startTime = (String) table.getValueAt(rowNumber, 0);
-                    String endTime = (String) table.getValueAt(rowNumber, 1);
-                    String actionName = (String) table.getValueAt(rowNumber, 2);
-                    boolean exportSuccess = logic.ExportVideo(filePath, startTime, endTime, actionName);
-                    showPopupOnExportAction(exportSuccess, evt);
-                }
             }
         });
 
@@ -191,16 +183,6 @@ class MakeFrames {
         player.play();
         System.out.println("Current: " + player.getCurrentTime());
         System.out.println(player.getStopTime());
-    }
-
-    private void showPopupOnExportAction(boolean result, MouseEvent evt) {
-        JPopupMenu popupMenu = new JPopupMenu();
-        if (result) {
-            popupMenu.add("映像ファイル出力に成功しました");
-        } else {
-            popupMenu.add("映像ファイル出力に失敗しました");
-        }
-        popupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
     }
 }
 
