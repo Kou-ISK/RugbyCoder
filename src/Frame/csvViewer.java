@@ -40,10 +40,12 @@ class csvViewer extends JFrame {
         String startTime = (String) table.getValueAt(rowNumber, 0);
         String endTime = (String) table.getValueAt(rowNumber, 1);
         String actionName = (String) table.getValueAt(rowNumber, 2);
-        String[] rowData = new String[3];
+        String qualifier = (String) table.getValueAt(rowNumber, 3);
+        String[] rowData = new String[4];
         rowData[0] = startTime;
         rowData[1] = endTime;
         rowData[2] = actionName;
+        rowData[3] = qualifier;
         return rowData;
     }
 

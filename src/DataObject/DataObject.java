@@ -6,7 +6,12 @@ public class DataObject {
 
     public DataObject(String timeCode, String actionName) {
         this.startTimeCode = timeCode;
-        this.videoTime = videoTime;
+        this.actionName = actionName;
+    }
+
+    public DataObject(String timeCode, String endTime, String actionName, String actionQualifier) {
+        this.startTimeCode = timeCode;
+        this.endTimeCode = endTime;
         this.actionName = actionName;
         this.actionQualifier = actionQualifier;
     }

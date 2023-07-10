@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -170,5 +171,10 @@ public class Logic {
             throw new RuntimeException(e);
         }
         return milli;
+    }
+
+    // TODO 分析用メソッドを追加
+    public void analyze(ArrayList<DataObject> dto) {
+        
     }
 }
