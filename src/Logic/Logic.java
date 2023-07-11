@@ -53,7 +53,11 @@ public class Logic {
             pw.print(",");
             pw.print(action);
             pw.print(",");
-            pw.print("");
+            if(qualifier.isBlank() || qualifier == null) {
+                pw.print("");
+            }else{
+                pw.print(qualifier);
+            }
             pw.println();
             pw.flush();
             pw.close();
