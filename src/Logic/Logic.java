@@ -18,9 +18,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.List;
 
 import static Frame.Main.directoryPath;
 
@@ -166,7 +165,7 @@ public class Logic {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
             Date parsed = sdf.parse(time);
-            milli = Long.valueOf(parsed.getSeconds() * 1000);
+            milli = Long.valueOf(parsed.getTime());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -174,7 +173,22 @@ public class Logic {
     }
 
     // TODO 分析用メソッドを追加
+    // TODO 結果を表示するWindowを追加
     public void analyze(ArrayList<DataObject> dto) {
-        
+        var data = dto.stream().map(DataObject::getActionName).distinct();
+        Map<String, Map> analysisDatas = new HashMap<>();
+        data.forEach(it -> {
+            Map analysisData = new HashMap<>();
+            List<DataObject> dataOfIt = dto.stream().filter(dataObject -> dataObject.getActionName().equals(it)).toList();
+            analysisData.put("Count", dataOfIt.size());
+            analysisData.put("totalMillis", getTotalMillis(dataOfIt));
+            analysisDatas.put(it, analysisData);
+        });
+    }
+
+    private Long getTotalMillis(List<DataObject> dto) {
+        return dto.stream().mapToLong(dataObject ->
+                parseToMilli(dataObject.getEndTimeCode()) - parseToMilli(dataObject.getStartTimeCode())
+        ).sum();
     }
 }
