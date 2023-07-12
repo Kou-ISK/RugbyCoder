@@ -69,16 +69,16 @@ public class Logic {
         }
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
     public String getMediaName() {
         return mediaName;
     }
 
     public String getFilePath() {
         return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public void setMediaName(String directoryPath, String mediaName) {
@@ -191,6 +191,7 @@ public class Logic {
             analysisData.put("Total Second", getTotalMillis(dataOfIt) / 1000);
             int averageSecond = (int) ((getTotalMillis(dataOfIt) / 1000) / dataOfIt.size());
             analysisData.put("Average Second", averageSecond);
+            analysisData.put("Qualifiers", countQualifiers(dataOfIt));
             analysisDatas.put(it, analysisData);
         });
         String[] header = {"Instance Name", "Count", "Total Second", "Average Second"};
@@ -201,6 +202,18 @@ public class Logic {
         return dto.stream().mapToLong(dataObject ->
                 parseToMilli(dataObject.getEndTimeCode()) - parseToMilli(dataObject.getStartTimeCode())
         ).sum();
+    }
+
+    private HashMap countQualifiers(List<DataObject> dto) {
+        HashMap<String, Integer> qualifierCount = new HashMap<>();
+        dto.stream().map(data -> data.getActionQualifier()).distinct().forEach(it -> {
+            qualifierCount.put(it, (int) dto.stream().map(dataObject -> dataObject.getActionQualifier()).filter(s -> s.equals(it)).count());
+        });
+        return qualifierCount;
+    }
+
+    private Long getTotalMillisByQualifier(List<DataObject> dto, String qualifierName) {
+        return dto.stream().filter(s -> s.getActionQualifier().equals(qualifierName)).mapToLong(dataObject -> parseToMilli(dataObject.getEndTimeCode()) - parseToMilli(dataObject.getStartTimeCode())).sum();
     }
 
     private void showAnalysisWindow(String[] header, Map<String, Map> analysisDatas) {
