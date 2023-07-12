@@ -23,7 +23,7 @@ class MakeFrames {
         Logic logic = new Logic();
         String fileName;
 //      Creating Media Player Window
-        window videoWindow = new window("Rugby Coder");
+        Window videoWindow = new Window("Rugby Coder");
         //Input Video File Path
         MoviePanel mp = new MoviePanel(filePath);
         logic.setMediaName(directoryPath, mediaName);

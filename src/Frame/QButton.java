@@ -4,6 +4,7 @@ import DataObject.DataObject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Window;
 
 class QButton extends JButton {
     private final Container parent;

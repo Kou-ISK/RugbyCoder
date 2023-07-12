@@ -1,6 +1,7 @@
 package Logic;
 
 import DataObject.DataObject;
+import Frame.Window;
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
@@ -11,6 +12,8 @@ import com.googlecode.mp4parser.authoring.tracks.CroppedTrack;
 import javafx.scene.control.Slider;
 import javafx.util.Duration;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
@@ -18,8 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 import static Frame.Main.directoryPath;
 
@@ -53,9 +56,9 @@ public class Logic {
             pw.print(",");
             pw.print(action);
             pw.print(",");
-            if(qualifier.isBlank() || qualifier == null) {
+            if (qualifier.isBlank() || qualifier == null) {
                 pw.print("");
-            }else{
+            } else {
                 pw.print(qualifier);
             }
             pw.println();
@@ -185,14 +188,31 @@ public class Logic {
             Map analysisData = new HashMap<>();
             List<DataObject> dataOfIt = dto.stream().filter(dataObject -> dataObject.getActionName().equals(it)).toList();
             analysisData.put("Count", dataOfIt.size());
-            analysisData.put("totalMillis", getTotalMillis(dataOfIt));
+            analysisData.put("Total Second", getTotalMillis(dataOfIt) / 1000);
+            int averageSecond = (int) ((getTotalMillis(dataOfIt) / 1000) / dataOfIt.size());
+            analysisData.put("Average Second", averageSecond);
             analysisDatas.put(it, analysisData);
         });
+        String[] header = {"Instance Name", "Count", "Total Second", "Average Second"};
+        showAnalysisWindow(header, analysisDatas);
     }
 
     private Long getTotalMillis(List<DataObject> dto) {
         return dto.stream().mapToLong(dataObject ->
                 parseToMilli(dataObject.getEndTimeCode()) - parseToMilli(dataObject.getStartTimeCode())
         ).sum();
+    }
+
+    private void showAnalysisWindow(String[] header, Map<String, Map> analysisDatas) {
+        Window analysisWindow = new Window("Analysis", 1400, 400);
+        DefaultTableModel tableModel = new DefaultTableModel(header, 0);
+        JTable table = new JTable(tableModel);
+        JScrollPane jScrollPane = new JScrollPane(table);
+        analysisDatas.entrySet().forEach(it -> {
+            var data = it.getValue();
+            tableModel.addRow(new String[]{it.getKey(), data.get("Count").toString(), data.get("Total Second").toString(), data.get("Average Second").toString()});
+        });
+        analysisWindow.add(jScrollPane);
+        analysisWindow.show();
     }
 }
