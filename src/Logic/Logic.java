@@ -9,19 +9,16 @@ import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 import com.googlecode.mp4parser.authoring.tracks.CroppedTrack;
-import javafx.scene.control.Slider;
 import javafx.util.Duration;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.*;
 
 import static Frame.Main.directoryPath;
@@ -29,8 +26,6 @@ import static Frame.Main.directoryPath;
 public class Logic {
     private String mediaName;
     private String filePath;
-    private Slider timeSlider;
-    private Label timeLabel;
 
     //    CSV形式で書き出し
     public void csvWriter(String directoryPath, DataObject dataObject) {

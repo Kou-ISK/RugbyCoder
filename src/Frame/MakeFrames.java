@@ -1,6 +1,6 @@
 package Frame;
 
-import DataObject.teamDatas;
+import DataObject.TeamData;
 import Logic.Logic;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -12,11 +12,11 @@ import java.awt.event.*;
 
 class MakeFrames {
     static String filePath;
-    private String mediaName;
     static String directoryPath;
     static KeyListener kl;
+    private String mediaName;
 
-    void makeFrames(String directoryPath, String filePath, String mediaName, teamDatas td) throws Exception {
+    void makeFrames(String directoryPath, String filePath, String mediaName, TeamData td) throws Exception {
         this.filePath = filePath;
         this.mediaName = mediaName;
         MakeFrames.directoryPath = directoryPath;
@@ -27,7 +27,7 @@ class MakeFrames {
         //Input Video File Path
         MoviePanel mp = new MoviePanel(filePath);
         logic.setMediaName(directoryPath, mediaName);
-        csvViewer csvViewer = new csvViewer(directoryPath, mediaName);
+        CsvViewer csvViewer = new CsvViewer(directoryPath, mediaName);
 
         fileName = csvViewer.getFileName();
         //JavaFX動画インスタンスとプレイヤーを取得
@@ -69,7 +69,7 @@ class MakeFrames {
                              }
         );
 
-        codeWindow cWindow = new codeWindow(td, logic, csvViewer, "Code Window", player, 200, 300);
+        CodeWindow cWindow = new CodeWindow(td, logic, csvViewer, "Code Window", player, 200, 300);
 //        保存して終了
         cWindow.addWindowListener(new WindowAdapter() {
             @Override

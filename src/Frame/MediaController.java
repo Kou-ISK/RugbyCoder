@@ -17,15 +17,14 @@ import javafx.scene.media.MediaPlayer;
 
 import static Frame.MakeFrames.kl;
 
-class mediaController extends HBox {
-    // introducing Sliders
-    private Slider slider = new Slider(); // Slider for time
-
+class MediaController extends HBox {
     private static Button PlayButton = new Button("||"); // For pausing the mp
     private static Slider volumeSlider = new Slider(0, 100, 100);
+    // introducing Sliders
+    private Slider slider = new Slider(); // Slider for time
     private MediaPlayer player;
 
-    mediaController(MediaPlayer player) {
+    MediaController(MediaPlayer player) {
         // Default constructor taking
         // the MediaPlayer object
         this.player = player;

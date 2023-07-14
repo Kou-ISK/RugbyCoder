@@ -13,11 +13,11 @@ import java.io.File;
 
 //動画再生パネルクラス
 class MoviePanel extends JFXPanel {
+    private static MediaController mc;
     private final Media media;
     private final MediaPlayer player;
-    private int sliderTime;
     private final Slider slider;
-    private static mediaController mc;
+    private int sliderTime;
 
     MoviePanel(String filePath) {
         // 動画ファイルのパスを取得
@@ -34,7 +34,7 @@ class MoviePanel extends JFXPanel {
         Pane mpane = new Pane();
 
         // コントローラーを呼び出し
-        mc = new mediaController(player);
+        mc = new MediaController(player);
         mc.setFocusTraversable(false);
         int totalTime = (int) player.getTotalDuration().toSeconds();
         slider = new Slider(0, totalTime, 0);

@@ -4,13 +4,13 @@ import DataObject.DataObject;
 
 import javax.swing.*;
 
-class button extends JButton {
+class MyButton extends JButton {
     private DataObject dto;
     private int buttonState;
 //    0:not pushed, 1:pushed, 2:not yet
 
 
-    button(String title, int x, int y) {
+    MyButton(String title, int x, int y) {
         setText(title);
         setSize(x, y);
         buttonState = 2;
@@ -25,11 +25,11 @@ class button extends JButton {
         this.buttonState = buttonState;
     }
 
-    void setDto(DataObject dto) {
-        this.dto = dto;
-    }
-
     DataObject getDto() {
         return dto;
+    }
+
+    void setDto(DataObject dto) {
+        this.dto = dto;
     }
 }

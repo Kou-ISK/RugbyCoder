@@ -1,7 +1,7 @@
 package Frame;
 
 import DataObject.DataObject;
-import DataObject.teamDatas;
+import DataObject.TeamData;
 import Logic.Logic;
 import javafx.scene.media.MediaPlayer;
 
@@ -14,13 +14,13 @@ import static Frame.MakeFrames.directoryPath;
 import static java.awt.Color.blue;
 import static java.awt.Color.red;
 
-class codeWindow extends JFrame {
+class CodeWindow extends JFrame {
     private final String Ateam;
     private final String Bteam;
     private final ArrayList<String> buttonWithQualifierList = new ArrayList<>(Arrays.asList("キックオフ", "スクラム", "ラインアウト", "トライ"));
     private final ArrayList<String> buttonWithoutQualifierList = new ArrayList<>(Arrays.asList("タックル", "22m侵入", "WTBボールタッチ", "キック", "PK"));
 
-    codeWindow(teamDatas td, Logic logic, csvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
+    CodeWindow(TeamData td, Logic logic, CsvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
         setTitle(title);
         setSize(x, y);
         Container cwContainer = this.getContentPane();
@@ -32,38 +32,38 @@ class codeWindow extends JFrame {
         /**
          * ポゼッション
          **/
-        button APosButton = new button(Ateam, 400, 200);
-        button BPosButton = new button(Bteam, 400, 200);
-        APosButton.addActionListener(a -> {
+        MyButton APosMyButton = new MyButton(Ateam, 400, 200);
+        MyButton BPosButton = new MyButton(Bteam, 400, 200);
+        APosMyButton.addActionListener(a -> {
             if (BPosButton.getButtonState() == 1) {
                 BPosButton.doClick();
             }
-            int state = APosButton.getButtonState();
+            int state = APosMyButton.getButtonState();
             if (state == 0 || state == 2) {
                 DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), Ateam);
-                APosButton.setBorderPainted(false);
-                APosButton.setDto(dto);
-                APosButton.setForeground(red);
-                APosButton.setButtonState(1);
+                APosMyButton.setBorderPainted(false);
+                APosMyButton.setDto(dto);
+                APosMyButton.setForeground(red);
+                APosMyButton.setButtonState(1);
             }
             if (state == 1) {
-                APosButton.setBorderPainted(true);
-                DataObject dto = APosButton.getDto();
+                APosMyButton.setBorderPainted(true);
+                DataObject dto = APosMyButton.getDto();
                 if (dto != null) {
                     dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
                     logic.csvWriter(directoryPath, dto);
-                    APosButton.setForeground(Color.black);
+                    APosMyButton.setForeground(Color.black);
                     csvViewer.addRow(dto);
                 }
-                APosButton.setButtonState(0);
+                APosMyButton.setButtonState(0);
             }
         });
-        APosButton.setBackground(blue);
-        APosButton.setOpaque(true);
-        cwContainer.add(APosButton);
+        APosMyButton.setBackground(blue);
+        APosMyButton.setOpaque(true);
+        cwContainer.add(APosMyButton);
         BPosButton.addActionListener(a -> {
-            if (APosButton.getButtonState() == 1) {
-                APosButton.doClick();
+            if (APosMyButton.getButtonState() == 1) {
+                APosMyButton.doClick();
             }
             int state = BPosButton.getButtonState();
             if (state == 0 || state == 2) {
@@ -91,10 +91,10 @@ class codeWindow extends JFrame {
          * 各種アクションボタン(ラベルあり)を追加
          */
         buttonWithQualifierList.forEach(buttonText -> {
-            cwButton aButton = new cwButton(Ateam + buttonText, logic, player, csvViewer, 400, 200, true);
+            CodeWindowButton aButton = new CodeWindowButton(Ateam + buttonText, logic, player, csvViewer, 400, 200, true);
             aButton.setBackground(blue);
             cwContainer.add(aButton);
-            cwButton bButton = new cwButton(Bteam + buttonText, logic, player, csvViewer, 400, 200, true);
+            CodeWindowButton bButton = new CodeWindowButton(Bteam + buttonText, logic, player, csvViewer, 400, 200, true);
             cwContainer.add(bButton);
         });
 
@@ -102,10 +102,10 @@ class codeWindow extends JFrame {
          * 各種アクションボタン(ラベルなし)を追加
          */
         buttonWithoutQualifierList.forEach(buttonText -> {
-            cwButton aButton = new cwButton(Ateam + buttonText, logic, player, csvViewer, 400, 200, false);
+            CodeWindowButton aButton = new CodeWindowButton(Ateam + buttonText, logic, player, csvViewer, 400, 200, false);
             aButton.setBackground(blue);
             cwContainer.add(aButton);
-            cwButton bButton = new cwButton(Bteam + buttonText, logic, player, csvViewer, 400, 200, false);
+            CodeWindowButton bButton = new CodeWindowButton(Bteam + buttonText, logic, player, csvViewer, 400, 200, false);
             cwContainer.add(bButton);
         });
 

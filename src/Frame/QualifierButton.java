@@ -3,13 +3,13 @@ package Frame;
 import DataObject.DataObject;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.Window;
+import java.awt.*;
 
-class QButton extends JButton {
+class QualifierButton extends JButton {
     private final Container parent;
 
-    QButton(String title, DataObject dto) {
+    QualifierButton(String title, DataObject dto) {
         setText(title);
         this.parent = getParent();
         addActionListener(a -> {

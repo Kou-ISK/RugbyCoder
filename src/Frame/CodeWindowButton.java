@@ -10,12 +10,12 @@ import java.awt.*;
 import static Frame.MakeFrames.directoryPath;
 import static Frame.MakeFrames.kl;
 
-class cwButton extends JButton {
+class CodeWindowButton extends JButton {
     private DataObject dto;
     private int buttonState;
 //    0:not pushed, 1:pushed, 2:not yet
 
-    cwButton(String title, Logic logic, MediaPlayer player, csvViewer csvViewer, int x, int y, boolean needQualifier) {
+    CodeWindowButton(String title, Logic logic, MediaPlayer player, CsvViewer csvViewer, int x, int y, boolean needQualifier) {
         setText(title);
         setSize(x, y);
         setFocusable(false);
@@ -32,7 +32,7 @@ class cwButton extends JButton {
                 this.setForeground(Color.red);
                 this.setButtonState(1);
                 if (needQualifier == true) {
-                    qualifierWindow qw = new qualifierWindow(dto);
+                    QualifierWindow qw = new QualifierWindow(dto);
                     qw.setVisible(true);
                 }
             }
@@ -58,11 +58,11 @@ class cwButton extends JButton {
         this.buttonState = buttonState;
     }
 
-    private void setDto(DataObject dto) {
-        this.dto = dto;
-    }
-
     private DataObject getDto() {
         return dto;
+    }
+
+    private void setDto(DataObject dto) {
+        this.dto = dto;
     }
 }

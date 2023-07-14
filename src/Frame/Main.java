@@ -1,6 +1,6 @@
 package Frame;
 
-import DataObject.teamDatas;
+import DataObject.TeamData;
 import Logic.Logic;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -13,13 +13,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Main {
+    public static String directoryPath;
     private static String path;
     private static String mediaName;
-    public static String directoryPath;
+    private static Logic logic = new Logic();
 
     public static void main(String[] args) throws Exception {
 //        TODO パッケージをクリックで実行できるようにしたい
-        Logic logic = new Logic();
         mainView mv = new mainView("Open File", 350, 300);
         mv.setVisible(true);
         mv.getNameButton.addActionListener(e -> {
@@ -56,7 +56,7 @@ public class Main {
                                  new JsonReader(new BufferedReader(new FileReader(jsonPath)))) {
                         // JSONからUserオブジェクトへの変換
                         Gson gson = new Gson();
-                        teamDatas td = gson.fromJson(reader, teamDatas.class);
+                        TeamData td = gson.fromJson(reader, TeamData.class);
                         MakeFrames mf = new MakeFrames();
                         mf.makeFrames(directoryPath, path, mediaName, td);
                     } catch (IOException ex) {
@@ -74,7 +74,7 @@ public class Main {
             mediaName = mv.mediaNameField.getText();
             String Ateam = mv.AteamField.getText();
             String Bteam = mv.BteamField.getText();
-            teamDatas td = new teamDatas(Ateam, Bteam);
+            TeamData td = new TeamData(Ateam, Bteam);
             logic.setFilePath(mv.pathField.getText());
             logic.setMediaName(directoryPath, mv.mediaNameField.getText());
             MakeFrames mf = new MakeFrames();
@@ -86,7 +86,7 @@ public class Main {
                 try (JsonWriter writer =
                              new JsonWriter(new BufferedWriter(new FileWriter(jsonPath)))) {
                     Gson gson = new Gson();
-                    gson.toJson(td, teamDatas.class, writer);
+                    gson.toJson(td, TeamData.class, writer);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -102,6 +102,7 @@ public class Main {
 
     static class mainView extends JFrame {
 
+        private final JScrollPane jScrollPane = new JScrollPane();
         private String filePath;
         private String mediaName;
         private Button button;
@@ -110,7 +111,6 @@ public class Main {
         private JTextField mediaNameField;
         private JTextField AteamField;
         private JTextField BteamField;
-        private final JScrollPane jScrollPane = new JScrollPane();
 
         mainView(String title, int x, int y) {
             setTitle(title);

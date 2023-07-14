@@ -7,14 +7,14 @@ import javax.swing.table.DefaultTableModel;
 import java.io.*;
 import java.util.regex.Pattern;
 
-class csvViewer extends JFrame {
-    private final String fileName;
+class CsvViewer extends JFrame {
     private static final String[] header = {"startTime", "endTime", "Action", "Qualifier"};
     private static final DefaultTableModel tableModel = new DefaultTableModel(null, header);
     private static final JTable table = new JTable(tableModel);
+    private final String fileName;
     private final JScrollPane jScrollPane = new JScrollPane(table);
 
-    csvViewer(String directoryPath, String filename) throws IOException {
+    CsvViewer(String directoryPath, String filename) throws IOException {
         super(filename + " - TimeLine");
         fileName = directoryPath + "/" + filename + ".csv";
 
@@ -25,15 +25,6 @@ class csvViewer extends JFrame {
         table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         pack();
         show();
-    }
-
-    String getFileName() {
-        return fileName;
-    }
-
-    void addRow(DataObject dto) {
-        Object[] dataList = {dto.getStartTimeCode(), dto.getEndTimeCode(), dto.getActionName(), dto.getActionQualifier()};
-        tableModel.addRow(dataList);
     }
 
     static String[] getRow(int rowNumber) {
@@ -47,6 +38,19 @@ class csvViewer extends JFrame {
         rowData[2] = actionName;
         rowData[3] = qualifier;
         return rowData;
+    }
+
+    static JTable getTable() {
+        return table;
+    }
+
+    String getFileName() {
+        return fileName;
+    }
+
+    void addRow(DataObject dto) {
+        Object[] dataList = {dto.getStartTimeCode(), dto.getEndTimeCode(), dto.getActionName(), dto.getActionQualifier()};
+        tableModel.addRow(dataList);
     }
 
     void removeRow(int rowNumber) {
@@ -80,12 +84,6 @@ class csvViewer extends JFrame {
         }
         System.out.println("OK");
     }
-
-
-    static JTable getTable() {
-        return table;
-    }
-
 
     private void readIn() {
         Pattern pattern = Pattern.compile(",");

@@ -37,8 +37,8 @@ class MyMenuBar {
     }
 
     private void exportAction() {
-        int rowNumber = csvViewer.getTable().getSelectedRow();
-        String[] rowData = csvViewer.getRow(rowNumber);
+        int rowNumber = CsvViewer.getTable().getSelectedRow();
+        String[] rowData = CsvViewer.getRow(rowNumber);
         boolean exportSuccess = logic.ExportVideo(filePath, rowData[0], rowData[1], rowData[2]);
         showPopupOnExportAction(exportSuccess);
     }
@@ -54,10 +54,10 @@ class MyMenuBar {
     }
 
     private void analyze() {
-        int rowCount = csvViewer.getTable().getRowCount();
+        int rowCount = CsvViewer.getTable().getRowCount();
         ArrayList<DataObject> dto = new ArrayList<>();
         for (int i = 0; i < rowCount; i++) {
-            String[] rowData = csvViewer.getRow(i);
+            String[] rowData = CsvViewer.getRow(i);
             DataObject data = new DataObject(rowData[0], rowData[1], rowData[2], rowData[3]);
             dto.add(data);
         }
