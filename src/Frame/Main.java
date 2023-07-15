@@ -139,6 +139,14 @@ public class Main {
             add(BteamField);
             add(button);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            // TODO ファイルを選択して起動できるように変更
+            JFileChooser filechooser = new JFileChooser();
+            int selected = filechooser.showOpenDialog(this);
+            if (selected == JFileChooser.APPROVE_OPTION) {
+                File file = filechooser.getSelectedFile();
+            }
+            add(filechooser);
         }
 
         String getFilePath() {
