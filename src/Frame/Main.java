@@ -20,63 +20,14 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 //        TODO パッケージをクリックで実行できるようにしたい
-        mainView mv = new mainView("Open File", 350, 300);
-        mv.setVisible(true);
-        mv.getNameButton.addActionListener(e -> {
-            path = mv.pathField.getText();
-            File file = new File(path);
-            directoryPath = file.getParentFile() + "/";
-            System.out.println(file.getName().split("."));
-            int point = file.getName().lastIndexOf(".");
-            if (point != -1) {
-                mediaName = file.getName().substring(0, point);
-            } else {
-                mediaName = file.getName();
-            }
-            File rugbyCoderPkg = new File(directoryPath + mediaName);
-            // 新規ディレクトリを作成
-            // 新規パッケージ生成する場合
-            System.out.println(file.getParentFile().getName());
-            String jsonPath = directoryPath + mediaName + ".json";
-            System.out.println(mediaName);
-            if (!file.getParentFile().getName().equals(mediaName)) {
-                rugbyCoderPkg.mkdir();
-                try {
-                    Files.move(Path.of(file.getPath()), Path.of(directoryPath + mediaName + "/" + mediaName + ".mp4"));
-                    path = directoryPath + mediaName + "/" + mediaName + ".mp4";
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            } else {
-                path = directoryPath + "/" + mediaName + ".mp4";
-                File jsonFile = new File(jsonPath);
-                if (jsonFile.exists()) {
-                    // JSONファイルからの読み込み
-                    try (JsonReader reader =
-                                 new JsonReader(new BufferedReader(new FileReader(jsonPath)))) {
-                        // JSONからUserオブジェクトへの変換
-                        Gson gson = new Gson();
-                        TeamData td = gson.fromJson(reader, TeamData.class);
-                        MakeFrames mf = new MakeFrames();
-                        mf.makeFrames(directoryPath, path, mediaName, td);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    mv.setVisible(false);
-                }
-            }
-            mv.mediaNameField.setText(mediaName);
-        });
-        mv.button.addActionListener(e -> {
-            path = mv.pathField.getText();
-            mediaName = mv.mediaNameField.getText();
-            String Ateam = mv.AteamField.getText();
-            String Bteam = mv.BteamField.getText();
+        startView startView = new startView("Open File", 350, 300);
+        startView.setVisible(true);
+        startView.confirmButton.addActionListener(e -> {
+            mediaName = startView.mediaNameField.getText();
+            String Ateam = startView.AteamField.getText();
+            String Bteam = startView.BteamField.getText();
             TeamData td = new TeamData(Ateam, Bteam);
-            logic.setFilePath(mv.pathField.getText());
-            logic.setMediaName(directoryPath, mv.mediaNameField.getText());
+            logic.setMediaName(directoryPath, startView.mediaNameField.getText());
             MakeFrames mf = new MakeFrames();
             try {
                 // jsonファイル生成
@@ -91,7 +42,7 @@ public class Main {
                     ex.printStackTrace();
                 }
                 mf.makeFrames(directoryPath, path, mediaName, td);
-                mv.setVisible(false);
+                startView.setVisible(false);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -100,31 +51,22 @@ public class Main {
 
     }
 
-    static class mainView extends JFrame {
-
-        private final JScrollPane jScrollPane = new JScrollPane();
+    static class startView extends JFrame {
         private String filePath;
         private String mediaName;
-        private Button button;
-        private Button getNameButton;
-        private JTextField pathField;
+        private Button confirmButton;
         private JTextField mediaNameField;
         private JTextField AteamField;
         private JTextField BteamField;
+        private JFileChooser fileChooser = new JFileChooser();
 
-        mainView(String title, int x, int y) {
+        startView(String title, int x, int y) {
             setTitle(title);
             setSize(x, y);
             setLocation(600, 200);
-            button = new Button("Confirm");
-            button.setBackground(Color.darkGray);
-            getNameButton = new Button("Get Media Name");
-            getNameButton.setPreferredSize(new Dimension(300, 50));
-            getNameButton.setBackground(Color.lightGray);
-            button.setPreferredSize(new Dimension(300, 50));
-            pathField = new JTextField("Path Field");
-            pathField.setPreferredSize(new Dimension(300, 30));
-            pathField.setLocation(0, 30);
+            confirmButton = new Button("Confirm");
+            confirmButton.setBackground(Color.darkGray);
+            confirmButton.setPreferredSize(new Dimension(300, 50));
             mediaNameField = new JTextField("Media Name");
             mediaNameField.setPreferredSize(new Dimension(300, 30));
             AteamField = new JTextField("A TEAM");
@@ -132,29 +74,62 @@ public class Main {
             BteamField = new JTextField("B TEAM");
             BteamField.setPreferredSize(new Dimension(100, 30));
             setLayout(new FlowLayout(FlowLayout.CENTER));
-            add(pathField);
-            add(getNameButton);
             add(mediaNameField);
             add(AteamField);
             add(BteamField);
-            add(button);
+            add(confirmButton);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            // TODO ファイルを選択して起動できるように変更
-            JFileChooser filechooser = new JFileChooser();
-            int selected = filechooser.showOpenDialog(this);
+            // TODO ファイル選択後にウィンドウを閉じるように修正
+            int selected = fileChooser.showOpenDialog(this);
             if (selected == JFileChooser.APPROVE_OPTION) {
-                File file = filechooser.getSelectedFile();
+                File file = fileChooser.getSelectedFile();
+                directoryPath = file.getParentFile() + "/";
+                System.out.println(file.getName().split("."));
+                int point = file.getName().lastIndexOf(".");
+                if (point != -1) {
+                    mediaName = file.getName().substring(0, point);
+                } else {
+                    mediaName = file.getName();
+                }
+                File rugbyCoderPkg = new File(directoryPath + mediaName);
+                // 新規ディレクトリを作成
+                // 新規パッケージ生成する場合
+                System.out.println(file.getParentFile().getName());
+                String jsonPath = directoryPath + mediaName + ".json";
+                System.out.println(mediaName);
+                if (!file.getParentFile().getName().equals(mediaName)) {
+                    rugbyCoderPkg.mkdir();
+                    try {
+                        Files.move(Path.of(file.getPath()), Path.of(directoryPath + mediaName + "/" + mediaName + ".mp4"));
+                        path = directoryPath + mediaName + "/" + mediaName + ".mp4";
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                } else {
+                    path = directoryPath + "/" + mediaName + ".mp4";
+                    File jsonFile = new File(jsonPath);
+                    if (jsonFile.exists()) {
+                        // JSONファイルからの読み込み
+                        try (JsonReader reader =
+                                     new JsonReader(new BufferedReader(new FileReader(jsonPath)))) {
+                            // JSONからUserオブジェクトへの変換
+                            Gson gson = new Gson();
+                            TeamData td = gson.fromJson(reader, TeamData.class);
+                            MakeFrames mf = new MakeFrames();
+                            mf.makeFrames(directoryPath, path, mediaName, td);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        setVisible(false);
+                    }
+                }
+                mediaNameField.setText(mediaName);
+                this.setVisible(false);
             }
-            add(filechooser);
-        }
-
-        String getFilePath() {
-            return filePath;
-        }
-
-        String getMediaName() {
-            return mediaName;
+            add(fileChooser);
         }
     }
 }
