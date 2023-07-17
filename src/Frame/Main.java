@@ -79,7 +79,7 @@ public class Main {
             add(BteamField);
             add(confirmButton);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+            fileChooser.setVisible(true);
             // TODO ファイル選択後にウィンドウを閉じるように修正
             int selected = fileChooser.showOpenDialog(this);
             if (selected == JFileChooser.APPROVE_OPTION) {
@@ -98,6 +98,7 @@ public class Main {
                 System.out.println(file.getParentFile().getName());
                 String jsonPath = directoryPath + mediaName + ".json";
                 System.out.println(mediaName);
+                // ディレクトリ名とファイル名が一致しない場合
                 if (!file.getParentFile().getName().equals(mediaName)) {
                     rugbyCoderPkg.mkdir();
                     try {
@@ -123,13 +124,12 @@ public class Main {
                         } catch (Exception ex) {
                             throw new RuntimeException(ex);
                         }
-                        setVisible(false);
+                        this.setVisible(false);
                     }
                 }
                 mediaNameField.setText(mediaName);
-                this.setVisible(false);
+                fileChooser.setVisible(false);
             }
-            add(fileChooser);
         }
     }
 }

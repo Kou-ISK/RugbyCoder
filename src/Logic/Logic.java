@@ -175,7 +175,6 @@ public class Logic {
     }
 
     // TODO 分析用メソッドを追加
-    // TODO 結果を表示するWindowを追加
     public void analyze(ArrayList<DataObject> dto) {
         var data = dto.stream().map(DataObject::getActionName).distinct();
         Map<String, Map> analysisDatas = new HashMap<>();
