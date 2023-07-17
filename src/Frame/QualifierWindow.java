@@ -1,6 +1,6 @@
 package Frame;
 
-import DataObject.DataObject;
+import DataObject.TimelineDataObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 class QualifierWindow extends JFrame {
-    private final DataObject dto;
+    private final TimelineDataObject dto;
     private ArrayList<String> qualifiers = new ArrayList<>(Arrays.asList("Won", "Stolen", "Success", "Miss", "Again"));
 
-    QualifierWindow(DataObject dto) {
+    QualifierWindow(TimelineDataObject dto) {
         setTitle("Qualifier");
         this.dto = dto;
         setSize(350, 100);

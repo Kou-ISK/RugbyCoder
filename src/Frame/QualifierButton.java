@@ -1,6 +1,6 @@
 package Frame;
 
-import DataObject.DataObject;
+import DataObject.TimelineDataObject;
 
 import javax.swing.*;
 import java.awt.Window;
@@ -9,7 +9,7 @@ import java.awt.*;
 class QualifierButton extends JButton {
     private final Container parent;
 
-    QualifierButton(String title, DataObject dto) {
+    QualifierButton(String title, TimelineDataObject dto) {
         setText(title);
         this.parent = getParent();
         addActionListener(a -> {

@@ -1,7 +1,7 @@
 package Frame;
 
 
-import DataObject.DataObject;
+import DataObject.TimelineDataObject;
 import Logic.Logic;
 
 import javax.swing.*;
@@ -55,10 +55,10 @@ class MyMenuBar {
 
     private void analyze() {
         int rowCount = CsvViewer.getTable().getRowCount();
-        ArrayList<DataObject> dto = new ArrayList<>();
+        ArrayList<TimelineDataObject> dto = new ArrayList<>();
         for (int i = 0; i < rowCount; i++) {
             String[] rowData = CsvViewer.getRow(i);
-            DataObject data = new DataObject(rowData[0], rowData[1], rowData[2], rowData[3]);
+            TimelineDataObject data = new TimelineDataObject(rowData[0], rowData[1], rowData[2], rowData[3]);
             dto.add(data);
         }
         logic.analyze(dto);

@@ -1,6 +1,6 @@
 package Frame;
 
-import DataObject.DataObject;
+import DataObject.TimelineDataObject;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -48,7 +48,7 @@ class CsvViewer extends JFrame {
         return fileName;
     }
 
-    void addRow(DataObject dto) {
+    void addRow(TimelineDataObject dto) {
         Object[] dataList = {dto.getStartTimeCode(), dto.getEndTimeCode(), dto.getActionName(), dto.getActionQualifier()};
         tableModel.addRow(dataList);
     }

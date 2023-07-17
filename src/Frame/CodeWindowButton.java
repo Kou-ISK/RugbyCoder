@@ -1,6 +1,6 @@
 package Frame;
 
-import DataObject.DataObject;
+import DataObject.TimelineDataObject;
 import Logic.Logic;
 import javafx.scene.media.MediaPlayer;
 
@@ -11,7 +11,7 @@ import static Frame.MakeFrames.directoryPath;
 import static Frame.MakeFrames.kl;
 
 class CodeWindowButton extends JButton {
-    private DataObject dto;
+    private TimelineDataObject dto;
     private int buttonState;
 //    0:not pushed, 1:pushed, 2:not yet
 
@@ -26,7 +26,7 @@ class CodeWindowButton extends JButton {
         addActionListener(a -> {
             int state = this.getButtonState();
             if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), title);
+                TimelineDataObject dto = new TimelineDataObject(logic.getTimeStamp(player.getCurrentTime()), title);
                 this.setBorderPainted(false);
                 this.setDto(dto);
                 this.setForeground(Color.red);
@@ -38,7 +38,7 @@ class CodeWindowButton extends JButton {
             }
             if (state == 1) {
                 this.setBorderPainted(true);
-                DataObject dto = this.getDto();
+                TimelineDataObject dto = this.getDto();
                 if (dto != null) {
                     dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
                     logic.csvWriter(directoryPath, dto);
@@ -58,11 +58,11 @@ class CodeWindowButton extends JButton {
         this.buttonState = buttonState;
     }
 
-    private DataObject getDto() {
+    private TimelineDataObject getDto() {
         return dto;
     }
 
-    private void setDto(DataObject dto) {
+    private void setDto(TimelineDataObject dto) {
         this.dto = dto;
     }
 }

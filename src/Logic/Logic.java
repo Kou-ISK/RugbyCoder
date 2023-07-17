@@ -1,6 +1,6 @@
 package Logic;
 
-import DataObject.DataObject;
+import DataObject.TimelineDataObject;
 import Frame.Window;
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -28,11 +28,11 @@ public class Logic {
     private String filePath;
 
     //    CSV形式で書き出し
-    public void csvWriter(String directoryPath, DataObject dataObject) {
-        String startTimeCode = dataObject.getStartTimeCode();
-        String endTimeCode = dataObject.getEndTimeCode();
-        String action = dataObject.getActionName();
-        String qualifier = dataObject.getActionQualifier();
+    public void csvWriter(String directoryPath, TimelineDataObject timelineDataObject) {
+        String startTimeCode = timelineDataObject.getStartTimeCode();
+        String endTimeCode = timelineDataObject.getEndTimeCode();
+        String action = timelineDataObject.getActionName();
+        String qualifier = timelineDataObject.getActionQualifier();
         FileWriter fw;
         try {
             File file = new File(directoryPath + mediaName + ".csv");
@@ -175,12 +175,12 @@ public class Logic {
     }
 
     // TODO 分析用メソッドを追加
-    public void analyze(ArrayList<DataObject> dto) {
-        var data = dto.stream().map(DataObject::getActionName).distinct();
+    public void analyze(ArrayList<TimelineDataObject> dto) {
+        var data = dto.stream().map(TimelineDataObject::getActionName).distinct();
         Map<String, Map> analysisDatas = new HashMap<>();
         data.forEach(it -> {
             Map analysisData = new HashMap<>();
-            List<DataObject> dataOfIt = dto.stream().filter(dataObject -> dataObject.getActionName().equals(it)).toList();
+            List<TimelineDataObject> dataOfIt = dto.stream().filter(dataObject -> dataObject.getActionName().equals(it)).toList();
             analysisData.put("Count", dataOfIt.size());
             analysisData.put("Total Second", getTotalMillis(dataOfIt) / 1000);
             int averageSecond = (int) ((getTotalMillis(dataOfIt) / 1000) / dataOfIt.size());
@@ -192,13 +192,13 @@ public class Logic {
         showAnalysisWindow(header, analysisDatas);
     }
 
-    private Long getTotalMillis(List<DataObject> dto) {
+    private Long getTotalMillis(List<TimelineDataObject> dto) {
         return dto.stream().mapToLong(dataObject ->
                 parseToMilli(dataObject.getEndTimeCode()) - parseToMilli(dataObject.getStartTimeCode())
         ).sum();
     }
 
-    private HashMap countQualifiers(List<DataObject> dto) {
+    private HashMap countQualifiers(List<TimelineDataObject> dto) {
         HashMap<String, Integer> qualifierCount = new HashMap<>();
         dto.stream().map(data -> data.getActionQualifier()).distinct().forEach(it -> {
             qualifierCount.put(it, (int) dto.stream().map(dataObject -> dataObject.getActionQualifier()).filter(s -> s.equals(it)).count());
@@ -206,7 +206,7 @@ public class Logic {
         return qualifierCount;
     }
 
-    private Long getTotalMillisByQualifier(List<DataObject> dto, String qualifierName) {
+    private Long getTotalMillisByQualifier(List<TimelineDataObject> dto, String qualifierName) {
         return dto.stream().filter(s -> s.getActionQualifier().equals(qualifierName)).mapToLong(dataObject -> parseToMilli(dataObject.getEndTimeCode()) - parseToMilli(dataObject.getStartTimeCode())).sum();
     }
 

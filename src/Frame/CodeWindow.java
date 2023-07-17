@@ -1,7 +1,7 @@
 package Frame;
 
-import DataObject.DataObject;
 import DataObject.TeamData;
+import DataObject.TimelineDataObject;
 import Logic.Logic;
 import javafx.scene.media.MediaPlayer;
 
@@ -40,7 +40,7 @@ class CodeWindow extends JFrame {
             }
             int state = APosMyButton.getButtonState();
             if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), Ateam);
+                TimelineDataObject dto = new TimelineDataObject(logic.getTimeStamp(player.getCurrentTime()), Ateam);
                 APosMyButton.setBorderPainted(false);
                 APosMyButton.setDto(dto);
                 APosMyButton.setForeground(red);
@@ -48,7 +48,7 @@ class CodeWindow extends JFrame {
             }
             if (state == 1) {
                 APosMyButton.setBorderPainted(true);
-                DataObject dto = APosMyButton.getDto();
+                TimelineDataObject dto = APosMyButton.getDto();
                 if (dto != null) {
                     dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
                     logic.csvWriter(directoryPath, dto);
@@ -67,7 +67,7 @@ class CodeWindow extends JFrame {
             }
             int state = BPosButton.getButtonState();
             if (state == 0 || state == 2) {
-                DataObject dto = new DataObject(logic.getTimeStamp(player.getCurrentTime()), Bteam);
+                TimelineDataObject dto = new TimelineDataObject(logic.getTimeStamp(player.getCurrentTime()), Bteam);
                 BPosButton.setBorderPainted(false);
                 BPosButton.setDto(dto);
                 BPosButton.setForeground(Color.red);
@@ -75,7 +75,7 @@ class CodeWindow extends JFrame {
             }
             if (state == 1) {
                 BPosButton.setBorderPainted(true);
-                DataObject dto = BPosButton.getDto();
+                TimelineDataObject dto = BPosButton.getDto();
                 if (dto != null) {
                     dto.setEndTimeCode(logic.getTimeStamp(player.getCurrentTime()));
                     logic.csvWriter(directoryPath, dto);

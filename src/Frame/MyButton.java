@@ -1,11 +1,11 @@
 package Frame;
 
-import DataObject.DataObject;
+import DataObject.TimelineDataObject;
 
 import javax.swing.*;
 
 class MyButton extends JButton {
-    private DataObject dto;
+    private TimelineDataObject dto;
     private int buttonState;
 //    0:not pushed, 1:pushed, 2:not yet
 
@@ -25,11 +25,11 @@ class MyButton extends JButton {
         this.buttonState = buttonState;
     }
 
-    DataObject getDto() {
+    TimelineDataObject getDto() {
         return dto;
     }
 
-    void setDto(DataObject dto) {
+    void setDto(TimelineDataObject dto) {
         this.dto = dto;
     }
 }
