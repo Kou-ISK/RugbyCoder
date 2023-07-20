@@ -18,6 +18,8 @@ class MoviePanel extends JFXPanel {
     private final MediaPlayer player;
     private final Slider slider;
     private int sliderTime;
+    private Pane mediaPane;
+    private BorderPane rootPane;
 
     MoviePanel(String filePath) {
         // 動画ファイルのパスを取得
@@ -30,8 +32,8 @@ class MoviePanel extends JFXPanel {
 
 
         //JavaFXルートパネル
-        BorderPane root = new BorderPane();
-        Pane mpane = new Pane();
+        rootPane = new BorderPane();
+        mediaPane = new Pane();
 
         // コントローラーを呼び出し
         mc = new MediaController(player);
@@ -40,9 +42,9 @@ class MoviePanel extends JFXPanel {
         slider = new Slider(0, totalTime, 0);
         slider.setBlockIncrement(10);
 
-        mpane.getChildren().add(mediaView);
-        root.setCenter(mpane);
-        root.setBottom(mc);
+        mediaPane.getChildren().add(mediaView);
+        rootPane.setCenter(mediaPane);
+        rootPane.setBottom(mc);
 
         int rawTime = (int) media.getDuration().toSeconds();
         int second = rawTime % 60;
@@ -54,15 +56,9 @@ class MoviePanel extends JFXPanel {
                 hour, minute, second);
         System.out.println(time);
         //JavaFXScene
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(rootPane);
         //JFXPanelにSceneをセット
         setScene(scene);
-
-    }
-
-    int getSliderTime() {
-        this.sliderTime = (int) slider.getValue();
-        return this.sliderTime;
     }
 
     Media getMedia() {
@@ -73,7 +69,4 @@ class MoviePanel extends JFXPanel {
         return player;
     }
 
-    Slider getSlider() {
-        return slider;
-    }
 }

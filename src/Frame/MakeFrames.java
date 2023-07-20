@@ -94,6 +94,15 @@ class MakeFrames {
                 System.exit(0);
             }
         });
+        // Windowのサイズ変更イベントを処理するリスナーを追加
+        videoWindow.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                // JFrameのサイズが変更された際にMoviePanelのサイズを更新する
+                Dimension size = videoWindow.getSize();
+                mp.setSize(size.width, size.height);
+            }
+        });
 
         //Loading
         for (int i = 0; player.getStatus() != MediaPlayer.Status.READY; i++) {
@@ -114,7 +123,7 @@ class MakeFrames {
 
         //JFrame側のパネルサイズを動画に合わせる
 //        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW, videoH));
-        videoWindow.getContentPane().setSize(videoWindow.getSize());
+        mp.getRootPane().setSize(videoWindow.getSize());
 
         //JFrameサイズをパネル全体が見えるサイズに自動調整
         videoWindow.pack();
@@ -182,7 +191,6 @@ class MakeFrames {
 
         player.play();
         System.out.println("Current: " + player.getCurrentTime());
-        System.out.println(player.getStopTime());
     }
 }
 
