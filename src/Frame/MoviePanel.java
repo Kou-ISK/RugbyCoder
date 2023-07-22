@@ -20,6 +20,7 @@ class MoviePanel extends JFXPanel {
     private int sliderTime;
     private Pane mediaPane;
     private BorderPane rootPane;
+    private MediaView mediaView;
 
     MoviePanel(String filePath) {
         // 動画ファイルのパスを取得
@@ -28,12 +29,12 @@ class MoviePanel extends JFXPanel {
         media = new Media(f.toURI().toString());
         player = new MediaPlayer(media);
 
-        MediaView mediaView = new MediaView(player);
-
+        mediaView = new MediaView(player);
 
         //JavaFXルートパネル
         rootPane = new BorderPane();
         mediaPane = new Pane();
+        rootPane.autosize();
 
         // コントローラーを呼び出し
         mc = new MediaController(player);
@@ -69,4 +70,7 @@ class MoviePanel extends JFXPanel {
         return player;
     }
 
+    MediaView getMediaView() {
+        return mediaView;
+    }
 }

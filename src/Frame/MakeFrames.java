@@ -100,7 +100,7 @@ class MakeFrames {
             public void componentResized(ComponentEvent e) {
                 // JFrameのサイズが変更された際にMoviePanelのサイズを更新する
                 Dimension size = videoWindow.getSize();
-                mp.setSize(size.width, size.height);
+                mp.getMediaView().resize(size.height, size.width);
             }
         });
 
