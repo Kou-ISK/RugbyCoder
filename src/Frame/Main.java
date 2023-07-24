@@ -128,7 +128,7 @@ public class Main {
                     }
                 }
                 mediaNameField.setText(mediaName);
-                fileChooser.setVisible(false);
+                setVisible(false);
             }
         }
     }

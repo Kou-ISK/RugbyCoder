@@ -16,18 +16,10 @@ public class TeamData {
         return Ateam;
     }
 
-    public void setAteam(String Ateam) {
-        this.Ateam = Ateam;
-    }
-
     public String getBteam() {
         if (Bteam == null) {
             return "B TEAM";
         }
         return Bteam;
-    }
-
-    public void setBteam(String Bteam) {
-        this.Bteam = Bteam;
     }
 }

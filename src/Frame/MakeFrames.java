@@ -14,11 +14,9 @@ class MakeFrames {
     static String filePath;
     static String directoryPath;
     static KeyListener kl;
-    private String mediaName;
 
     void makeFrames(String directoryPath, String filePath, String mediaName, TeamData td) throws Exception {
         this.filePath = filePath;
-        this.mediaName = mediaName;
         MakeFrames.directoryPath = directoryPath;
         Logic logic = new Logic();
         String fileName;
@@ -29,7 +27,6 @@ class MakeFrames {
         logic.setMediaName(directoryPath, mediaName);
         CsvViewer csvViewer = new CsvViewer(directoryPath, mediaName);
 
-        fileName = csvViewer.getFileName();
         //JavaFX動画インスタンスとプレイヤーを取得
         Media media = mp.getMedia();
         MediaPlayer player = mp.getPlayer();
