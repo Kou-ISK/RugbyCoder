@@ -4,7 +4,6 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -17,8 +16,6 @@ class MoviePanel extends JFXPanel {
     private final Media media;
     private final MediaPlayer player;
     private final Slider slider;
-    private int sliderTime;
-    private Pane mediaPane;
     private BorderPane rootPane;
     private MediaView mediaView;
 
@@ -33,7 +30,6 @@ class MoviePanel extends JFXPanel {
 
         //JavaFXルートパネル
         rootPane = new BorderPane();
-        mediaPane = new Pane();
         rootPane.autosize();
 
         // コントローラーを呼び出し
@@ -43,8 +39,14 @@ class MoviePanel extends JFXPanel {
         slider = new Slider(0, totalTime, 0);
         slider.setBlockIncrement(10);
 
-        mediaPane.getChildren().add(mediaView);
-        rootPane.setCenter(mediaPane);
+        // MediaViewのアスペクト比を保持してリサイズ
+        mediaView.setPreserveRatio(true);
+
+        // MediaViewをrootPaneのプロパティにバインド
+        mediaView.fitWidthProperty().bind(rootPane.widthProperty());
+        mediaView.fitHeightProperty().bind(rootPane.heightProperty());
+
+        rootPane.setCenter(mediaView);
         rootPane.setBottom(mc);
 
         int rawTime = (int) media.getDuration().toSeconds();

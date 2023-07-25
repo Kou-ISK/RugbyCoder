@@ -95,9 +95,10 @@ class MakeFrames {
         videoWindow.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // JFrameのサイズが変更された際にMoviePanelのサイズを更新する
-                Dimension size = videoWindow.getSize();
-                mp.getMediaView().resize(size.height, size.width);
+                // JFXPanel内でSwingのComponentListenerを使ってウィンドウのサイズ変更を検知
+                int width = videoWindow.getWidth();
+                int height = videoWindow.getHeight();
+                mp.setSize(width, height);
             }
         });
 
@@ -109,20 +110,7 @@ class MakeFrames {
             }
             if (i > 20) throw new Exception("動画の読み込みに時間がかかりすぎたため中断しました。");
         }
-
-        //読み込み完了後なら動画サイズを取得できる
-        int videoW = (int) (media.getWidth() * 0.9);
-        int videoH = (int) ((media.getHeight() + 50) * 0.9);
-
-        //MoviePanelのサイズを動画に合わせてJFrameに追加
-        mp.setPreferredSize(new Dimension(videoW, videoH));
         videoWindow.add(mp);
-
-        //JFrame側のパネルサイズを動画に合わせる
-//        videoWindow.getContentPane().setPreferredSize(new Dimension(videoW, videoH));
-        mp.getRootPane().setSize(videoWindow.getSize());
-
-        //JFrameサイズをパネル全体が見えるサイズに自動調整
         videoWindow.pack();
         kl = new KeyListener() {
             @Override
