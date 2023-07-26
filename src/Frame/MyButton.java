@@ -1,27 +1,26 @@
 package Frame;
 
+import DataObject.ButtonState;
 import DataObject.TimelineDataObject;
 
 import javax.swing.*;
 
 class MyButton extends JButton {
+    private ButtonState buttonState;
     private TimelineDataObject dto;
-    private int buttonState;
-//    0:not pushed, 1:pushed, 2:not yet
-
 
     MyButton(String title, int x, int y) {
         setText(title);
         setSize(x, y);
-        buttonState = 2;
+        buttonState = ButtonState.PUSHED;
         setFocusable(false);
     }
 
-    int getButtonState() {
+    ButtonState getButtonState() {
         return this.buttonState;
     }
 
-    void setButtonState(int buttonState) {
+    void setButtonState(ButtonState buttonState) {
         this.buttonState = buttonState;
     }
 

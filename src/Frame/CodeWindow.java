@@ -1,5 +1,6 @@
 package Frame;
 
+import DataObject.ButtonState;
 import DataObject.TeamData;
 import DataObject.TimelineDataObject;
 import Logic.Logic;
@@ -35,18 +36,18 @@ class CodeWindow extends JFrame {
         MyButton APosMyButton = new MyButton(Ateam, 400, 200);
         MyButton BPosButton = new MyButton(Bteam, 400, 200);
         APosMyButton.addActionListener(a -> {
-            if (BPosButton.getButtonState() == 1) {
+            if (BPosButton.getButtonState() == ButtonState.PUSHED) {
                 BPosButton.doClick();
             }
-            int state = APosMyButton.getButtonState();
-            if (state == 0 || state == 2) {
+            ButtonState state = APosMyButton.getButtonState();
+            if (state == ButtonState.NOT_PUSHED || state == ButtonState.NOT_PUSHED_YET) {
                 TimelineDataObject dto = new TimelineDataObject(logic.getTimeStamp(player.getCurrentTime()), Ateam);
                 APosMyButton.setBorderPainted(false);
                 APosMyButton.setDto(dto);
                 APosMyButton.setForeground(red);
-                APosMyButton.setButtonState(1);
+                APosMyButton.setButtonState(ButtonState.PUSHED);
             }
-            if (state == 1) {
+            if (state == ButtonState.PUSHED) {
                 APosMyButton.setBorderPainted(true);
                 TimelineDataObject dto = APosMyButton.getDto();
                 if (dto != null) {
@@ -55,25 +56,25 @@ class CodeWindow extends JFrame {
                     APosMyButton.setForeground(Color.black);
                     csvViewer.addRow(dto);
                 }
-                APosMyButton.setButtonState(0);
+                APosMyButton.setButtonState(ButtonState.NOT_PUSHED);
             }
         });
         APosMyButton.setBackground(blue);
         APosMyButton.setOpaque(true);
         cwContainer.add(APosMyButton);
         BPosButton.addActionListener(a -> {
-            if (APosMyButton.getButtonState() == 1) {
+            if (APosMyButton.getButtonState() == ButtonState.PUSHED) {
                 APosMyButton.doClick();
             }
-            int state = BPosButton.getButtonState();
-            if (state == 0 || state == 2) {
+            ButtonState state = BPosButton.getButtonState();
+            if (state == ButtonState.NOT_PUSHED || state == ButtonState.NOT_PUSHED_YET) {
                 TimelineDataObject dto = new TimelineDataObject(logic.getTimeStamp(player.getCurrentTime()), Bteam);
                 BPosButton.setBorderPainted(false);
                 BPosButton.setDto(dto);
                 BPosButton.setForeground(Color.red);
-                BPosButton.setButtonState(1);
+                BPosButton.setButtonState(ButtonState.PUSHED);
             }
-            if (state == 1) {
+            if (state == ButtonState.PUSHED) {
                 BPosButton.setBorderPainted(true);
                 TimelineDataObject dto = BPosButton.getDto();
                 if (dto != null) {
@@ -82,7 +83,7 @@ class CodeWindow extends JFrame {
                     BPosButton.setForeground(Color.black);
                     csvViewer.addRow(dto);
                 }
-                BPosButton.setButtonState(0);
+                BPosButton.setButtonState(ButtonState.NOT_PUSHED);
             }
         });
         cwContainer.add(BPosButton);
