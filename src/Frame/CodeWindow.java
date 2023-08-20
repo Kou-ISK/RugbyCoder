@@ -19,7 +19,7 @@ class CodeWindow extends JFrame {
     private final String Ateam;
     private final String Bteam;
     private final ArrayList<String> buttonWithQualifierList = new ArrayList<>(Arrays.asList("キックオフ", "スクラム", "ラインアウト", "トライ"));
-    private final ArrayList<String> buttonWithoutQualifierList = new ArrayList<>(Arrays.asList("タックル", "22m侵入", "WTBボールタッチ", "キック", "PK"));
+    private final ArrayList<String> buttonWithoutQualifierList = new ArrayList<>(Arrays.asList("Good", "Bad", "タックル", "22m侵入", "WTBボールタッチ", "キック", "PK"));
 
     CodeWindow(TeamData td, Logic logic, CsvViewer csvViewer, String title, MediaPlayer player, int x, int y) {
         setTitle(title);
@@ -33,6 +33,7 @@ class CodeWindow extends JFrame {
         /**
          * ポゼッション
          **/
+        // TODO 修正する
         MyButton APosMyButton = new MyButton(Ateam, 400, 200);
         MyButton BPosButton = new MyButton(Bteam, 400, 200);
         APosMyButton.addActionListener(a -> {

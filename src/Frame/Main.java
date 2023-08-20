@@ -108,7 +108,7 @@ public class Main {
                         throw new RuntimeException(ex);
                     }
                 } else {
-                    path = directoryPath + "/" + mediaName + ".mp4";
+                    path = directoryPath + mediaName + ".mp4";
                     File jsonFile = new File(jsonPath);
                     if (jsonFile.exists()) {
                         // JSONファイルからの読み込み

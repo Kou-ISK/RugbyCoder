@@ -143,6 +143,7 @@ public class Logic {
             Track track = originalMovie.getTracks().get(0);
             Movie movie = new Movie();
 
+            // TODO 正しく映像をクロップできるようにする
             Long parsedStartTime = parseToMilli(startTime);
             Long parsedEndTime = parseToMilli(endTime);
             movie.addTrack(new AppendTrack(new CroppedTrack(track, parsedStartTime, parsedEndTime)));
@@ -166,8 +167,9 @@ public class Logic {
         Long milli;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // タイムゾーンを指定
             Date parsed = sdf.parse(time);
-            milli = Long.valueOf(parsed.getTime());
+            milli = parsed.getTime();
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
